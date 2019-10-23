@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'sms.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'sms_db',
+        'NAME': 'sms_project',
         'USER':'postgres',
         'PASSWORD': '1234',
         'HOST': 'localhost',
