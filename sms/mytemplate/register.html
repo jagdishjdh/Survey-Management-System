@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Register</title>
+	</head>
+	<body>
+		<form action="/register/" method="POST">
+			{% csrf_token %}
+			<pre  style="display: inline;">First Name:      </pre><input type="text" name="fname"><br>
+			<pre  style="display: inline;">Last Name:       </pre><input type="text" name="lname"><br>
+			<pre  style="display: inline;">Username:        </pre><input type="text" name="uname"><br>
+			<pre  style="display: inline;">Email:           </pre><input type="email" name="email"> <br>
+			<pre  style="display: inline;">Password:        </pre><input type="password" name="pass1"> <br>
+			<pre  style="display: inline;">Retype Password: </pre><input type="password" name="pass2"> <br>
+			<input type="submit" value="submit" >
+        </form>
+        <div>
+			{% for message in messages %}
+			<h3>{{message}}</h3>
+			{% endfor %}
+		</div>
+	</body>
+</html>

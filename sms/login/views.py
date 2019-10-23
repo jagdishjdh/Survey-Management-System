@@ -2,14 +2,58 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from . import models
 from django.contrib.auth.models import User, auth
-
+from django.contrib import messages
 # Create your views here.
 
 def home(request):
-    return HttpResponse('<h2>home</h2>')
+    return render(request, 'home.html')
 
 def login(request):
-    pass
+    if request.method == 'POST':
+        uname = request.POST['uname']
+        passwd = request.POST['password']
+
+        user = auth.authenticate(username=uname, password=passwd)
+        # print('post method')
+
+        if user is not None:
+            auth.login(request,user)
+            return render(request, 'dashboard.html')
+        else:
+            messages.info(request, 'Invalid Username or Password')
+            return redirect('/login')
+
+    else:
+        return render(request, 'login.html')
+        
 
 def register(request):
-    pass
+    if request.method == 'POST':
+        uname = request.POST['uname']
+        fname = request.POST['fname']
+        lname = request.POST['lname']
+        email = request.POST['email']
+        pass1 = request.POST['pass1']
+        pass2 = request.POST['pass2']
+
+        if pass1 == pass2:
+            if User.objects.filter(username=uname).exists():
+                messages.info(request, 'Username Taken')
+                return redirect('register')
+            elif User.objects.filter(email=email).exists():
+                messages.info(request, 'email is already registered')
+                return redirect('register')
+            else:
+                user = User.objects.create_user(username=uname, email=email, password=pass1, first_name=fname, last_name=lname)
+                user.save()
+                return redirect('login')
+        else:
+                messages.info(request, 'password mismatch')
+                return redirect('register')
+
+    else:
+        return render(request, 'register.html')
+
+def logout(request):
+    auth.logout(request)
+    return redirect('/')
