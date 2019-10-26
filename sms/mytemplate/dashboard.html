@@ -4,8 +4,13 @@
 		<title>Dashboard</title>
 	</head>
 	<body>
-        <h2>Hi, {{user.first_name}}</h2>
+        <h2>Hi, {{user.first_name}} {{user.last_name}}</h2>
 		<a href="/logout">Logout</a> <br>
 		<a href="editor/">Create a survey</a>
+		<br> <br>
+		
+		{% for survey in surveys %}
+			<a href="">{{survey.title}}</a> <br>
+		{% endfor %}
 	</body>
 </html>

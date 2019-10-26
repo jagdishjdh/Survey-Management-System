@@ -14,10 +14,11 @@ from django.contrib.auth.admin import User
 class Survey(models.Model):
     # user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
-    description = models.TextField()
-    startDate = models.DateTimeField(auto_now_add=True)
+    desc = models.TextField()
+    createDate = models.DateTimeField(auto_now_add=True)
     endDate = models.DateTimeField(default=False)
     isopen = models.BooleanField(default=True)
+    anonymous = models.BooleanField(default=True)
     # other field like who can fill up this form
 # 2
 class Section(models.Model):
