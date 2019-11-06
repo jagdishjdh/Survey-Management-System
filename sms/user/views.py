@@ -38,6 +38,11 @@ def create_survey(request):
 def editor(request, sur_id=None):
     if sur_id == None:
         return redirect('/user')
+
+    if request.method == 'POST':
+        pass
+        
+
     if request.user.is_authenticated:
         user = request.user
         # print(sur_id,'****************')
