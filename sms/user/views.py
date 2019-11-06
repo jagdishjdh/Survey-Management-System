@@ -22,6 +22,37 @@ def dashboard(request):
         messages.info(request, 'Please Login First')
         return render(request, 'login.html')
 
+def edit_profile(request):
+    if request.user.is_authenticated:
+        user = request.user
+
+        if request.method == 'POST':
+            fname = request.POST['fname']
+            lname = request.POST['lname']
+            email = request.POST['email']
+            pass1 = request.POST['pass1']
+            pass2 = request.POST['pass2']
+
+            if pass1 == "" or pass1 == pass2:
+                if User.objects.filter(email=email).exclude(username=user.username).exists():
+                    messages.info(request, 'email is already registered')
+                    return redirect('/user/editprofile')
+                else:
+                    user.first_name = fname
+                    user.last_name = lname
+                    user.email = email
+                    user.save()
+                    # return redirect('/user/editprofile')
+            else:
+                    messages.info(request, 'password mismatch')
+                    return redirect('/user/editprofile')
+
+        context = {'user': user}
+        return render(request, 'edit_profile.html',context)
+    else:
+        messages.info(request, 'Please Login First')
+        return render(request, 'login.html')
+
 def create_survey(request):
     if request.user.is_authenticated:
         user1 = request.user
@@ -39,20 +70,24 @@ def editor(request, sur_id=None):
     if sur_id == None:
         return redirect('/user')
 
-    if request.method == 'POST':
-        pass
-        
-
     if request.user.is_authenticated:
         user = request.user
-        # print(sur_id,'****************')
         sur = Survey.objects.filter(user_survey__user=user, id=sur_id)
-        
+
         if sur.count() == 0:
             # means this survey does not belongs to the logged in user
             return redirect('/user')
         
         else:
+            # if this is post request then data is to be saved first
+            if request.method == 'POST':
+                ques_update = request.POST['q_update'] # #~# , ##
+                sec_update = request.POST['sec_update'] # #~# , ##
+                sur_update = request.POST['sur_update'] # #~#
+                ques_del = request.POST['q_del'] # ,
+                sec_del = request.POST['sec_del'] # ,
+
+
             sec_lst = Section.objects.filter(survey=sur[0])
             
             # creating form object to be sent to editor page

@@ -3,3 +3,4 @@ https://colorlib.com/wp/template/login-form-v19/  // login templete
 https://stackoverflow.com/questions/1764435/database-design-for-a-survey	// help about understanding database implementation
 https://www.vertabelo.com/blog/a-database-model-for-an-online-survey-part-1/#blog-post-comments
 
+https://colorlib.com                      // for login and registration template
