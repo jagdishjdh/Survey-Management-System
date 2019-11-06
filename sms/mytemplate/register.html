@@ -1,26 +1,82 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
-	<head>
-		<title>Register</title>
-	</head>
-	<body>
-		<a href="/">Home</a><br>
-		<a href="/login/">Login</a>
+<html lang="en">
 
-		<form action="/register/" method="POST">
-			{% csrf_token %}
-			<pre  style="display: inline;">First Name:      </pre><input type="text" name="fname"><br>
-			<pre  style="display: inline;">Last Name:       </pre><input type="text" name="lname"><br>
-			<pre  style="display: inline;">Username:        </pre><input type="text" name="uname"><br>
-			<pre  style="display: inline;">Email:           </pre><input type="email" name="email"> <br>
-			<pre  style="display: inline;">Password:        </pre><input type="password" name="pass1"> <br>
-			<pre  style="display: inline;">Retype Password: </pre><input type="password" name="pass2"> <br>
-			<input type="submit" value="submit" >
-        </form>
-        <div>
-			{% for message in messages %}
-			<h3>{{message}}</h3>
-			{% endfor %}
-		</div>
-	</body>
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Title Page-->
+    <title>Register</title>
+
+    <!-- Icons font CSS-->
+    <link href="{% static 'register/vendor/mdi-font/css/material-design-iconic-font.min.css' %}" rel="stylesheet" media="all">
+    <link href="{% static 'register/vendor/font-awesome-4.7/css/font-awesome.min.css' %}" rel="stylesheet" media="all">
+    <!-- Font special for pages-->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
+
+    <!-- Vendor CSS-->
+    <link href="{% static 'register/vendor/select2/select2.min.css' %}" rel="stylesheet" media="all">
+    <link href="{% static 'register/vendor/datepicker/daterangepicker.css' %}" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link href="{% static 'register/css/main.css' %}" rel="stylesheet" media="all">
+</head>
+
+<body>
+    <div class="page-wrapper bg-blue p-t-100 p-b-100 font-robo">
+        <div class="wrapper wrapper--w680">
+            <div class="card card-1">
+                <div class="card-body">
+                    <h2 class="title">Registration Info</h2>
+                    <form action="/register/" method="POST">
+            			{% csrf_token %}
+                        <div class="row row-space">
+                            <div class="col-2 input-group">
+                                <input class="input--style-1" type="text" placeholder="First Name" name="fname">
+                            </div>
+                            <div class="col-2 input-group">
+                                <input class="input--style-1" type="text" placeholder="Last Name" name="lname">                                
+                            </div>
+                        </div>
+                        <div class="input-group">
+                                <input class="input--style-1" type="text" placeholder="Username" name="uname">
+                        </div>
+                        <div class="input-group">
+                                <input class="input--style-1" type="email" placeholder="Email" name="email">
+                        </div>
+                        <div class="input-group">
+                                <input class="input--style-1" type="password" placeholder="Password" name="pass1">
+                        </div>
+                        <div class="input-group">
+                                <input class="input--style-1" type="password" placeholder="Retype Password" name="pass2">
+                        </div>
+                        <div class="p-t-20">
+                            <button class="btn btn--radius btn--green" type="submit">Submit</button>
+                        </div>
+                        {% for message in messages %}
+							<span style= "font-size: 16px;color:rgb(121, 4, 4);">
+								{{message}}
+							</span>
+						{% endfor %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jquery JS-->
+    <script src="{% static 'register/vendor/jquery/jquery.min.js' %}"></script>
+    <!-- Vendor JS-->
+    <script src="{% static 'register/vendor/select2/select2.min.js' %}"></script>
+    <script src="{% static 'register/vendor/datepicker/moment.min.js' %}"></script>
+    <script src="{% static 'register/vendor/datepicker/daterangepicker.js' %}"></script>
+
+    <!-- Main JS-->
+    <script src="{% static 'register/js/global.js' %}"></script>
+
+</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+
 </html>
+<!-- end document-->
