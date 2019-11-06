@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Editor</title>
+	</head>
+	<body>
+		<a href="/user/">Dashboard</a>
+		
+        <h2>Editing {{form.survey.title}}</h2>
+		<h4>{{form.survey.desc}}</h4>
+		<h4>{{form.survey.createDate}}</h4>
+		<h4>{{form.survey.endDate}}</h4>
+		<h4>{{form.survey.isopen}}</h4>
+
+		{% for section, ques_dict in form.dictionary.items %}
+			<h4>{{section.title}}</h4>  
+			{% for ques, opt_lst in ques_dict.items %}
+				<h5>{{ques.desc}}</h5>  
+				{% for option in opt_lst %}
+					<p>{{option.value}}</p>
+				{% endfor %}
+			{% endfor %}
+		{% endfor %}
+	</body>
+</html>

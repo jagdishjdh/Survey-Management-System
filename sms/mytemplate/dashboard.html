@@ -4,13 +4,25 @@
 		<title>Dashboard</title>
 	</head>
 	<body>
-        <h2>Hi, {{user.first_name}} {{user.last_name}}</h2>
+        <h2>Hi, {{user.first_name}} </h2>
 		<a href="/logout">Logout</a> <br>
-		<a href="editor/">Create a survey</a>
+		<a href="create/">Create a survey</a>
 		<br> <br>
 		
 		{% for survey in surveys %}
-			<a href="">{{survey.title}}</a> <br>
+			<div><span>{{survey.title}}</span>
+				<a href="editor/{{survey.id}}">Open</a>
+				<span onclick="deletion( '{{survey.title}}','{{survey.id}}')"> delete </span> <br>
+			</div>
 		{% endfor %}
+
+		<script>
+			function deletion(name,id){
+				if(confirm('Are you sure you want to delete '+name+'?')){
+					window.location.href = "delete/"+id;
+				}
+			}
+		</script>
+		
 	</body>
 </html>
