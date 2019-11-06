@@ -7,4 +7,4 @@ admin.site.register(Section)
 admin.site.register(Question)
 admin.site.register(Options)
 admin.site.register(Response)
-
+admin.site.register(User_survey)
