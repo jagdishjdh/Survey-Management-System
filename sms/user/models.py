@@ -8,7 +8,7 @@ class Survey(models.Model):
     title = models.CharField(max_length=100)
     desc = models.TextField()
     createDate = models.DateTimeField(auto_now_add=True)
-    endDate = models.DateTimeField(default=None)
+    endDate = models.DateTimeField(blank=True, null=True, default=None)
     isopen = models.BooleanField(default=True)
     anonymous = models.BooleanField(default=True)
     # other field like who can fill up this form
