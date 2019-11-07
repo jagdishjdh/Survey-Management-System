@@ -40,7 +40,9 @@ def editor(request, sur_id=None):
         return redirect('/user')
 
     if request.method == 'POST':
-        pass
+        str11 = request.POST['input2']
+        print('***************************************')
+        print(str11)
         
 
     if request.user.is_authenticated:

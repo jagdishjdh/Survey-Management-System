@@ -3,10 +3,24 @@
 	<head>
 		<title>Home</title>
 	</head>
-	<body>
-		<ul>
-            <li><a href="login">Login</a></li>
+	<body style="background-color:aqua;"> 
+		<h1 style="background-color: yellowgreen;"> Create your form</h1>
+			<br>
+				<button onclick="login()">Login </button> <br>  <br> 
+				<button onclick="register()">Register </button> <br>  <br>
+
+	    <!-- <ul> 
+			<li><a href="login">Login</a></li>
             <li><a href="register">Register</a></li>
-        </ul>
+		</ul> -->
+
+		<script>
+				function login(){
+					window.location.href ="login"
+			}
+			function register(){
+				window.location.href ="register"
+		}
+	</script>
 	</body>
 </html>
