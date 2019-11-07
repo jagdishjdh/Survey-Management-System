@@ -25,8 +25,8 @@ SECRET_KEY = 'e04zq(m6b083_c26v$5=bo^rx$j-31dflt82f6&qpw*hry0b0i'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['10.196.15.255', '192.168.1.102', '127.0.0.1', 'localhost']    #wireless #archer-c_50
 
 # Application definition
 

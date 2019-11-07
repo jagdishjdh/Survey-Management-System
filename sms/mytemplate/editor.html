@@ -129,10 +129,14 @@ input:checked + .slider:before {
   <h1>create your form</h1>
 </div>
 
-<div class="container-fluid" style="background-color:rgb(255, 153, 0); height: 55px;">
+<div class="container-fluid" style="background-color:rgb(255, 153, 0);">
 	<a href="/user/">Dashboard</a>
 	<input type="text" name="form_title" class="form_ttl" value="{{form.survey.title}}">
 	<input type="text" name="form_desc" class="form_desc" value="{{form.survey.desc}}">
+	<span> accept response till :-</span>
+	<input type="date" name="form_exdate" >
+	<input type="time" name="form_extime" >
+	 
 
 	<!-- {% for section, ques_dict in form.dictionary.items %}
 		<h4>{{section.title}} aaaaaaaaaaaaaa</h4>  
@@ -148,21 +152,28 @@ input:checked + .slider:before {
 <div data-spy="affix" data-offset-top="125" class="container-fluid" 
 	style="background-color: rgb(255, 102, 255); text-align: center; ">
 
-  <button onclick="crtdiv()" style="margin: 8px; font-size: 20px;"> Add a question </button>
-  <button onclick="show()" style="margin: 8px; font-size: 20px;">save </button>
+  		<button onclick="crtdiv()" style="margin: 8px; font-size: 20px;"> Add a question </button>
+
+		<form id="save_form" action="/user/editor/{{form.survey.id}}" method="POST" style="line-break:strict;">
+			{% csrf_token %}
+			<div style="display: none;">
+			<input name="input1" id="table1" style="width: 100%;"> <br>
+			<input name="input2" id="table2" style="width: 100%;"> <br>
+			<input name="input3" id="table3" style="width: 100%;"> <br>
+			<input name="input4" id="table4" style="width: 100%;"> <br>
+			<input name="input5" id="table5" style="width: 100%;"> <br>
+			</div>
+			<input type="submit" onclick="show()" value="Save" style="margin: 8px; font-size: 20px;">
+		</form>
+
 </div>     
   
 <!-- all question -->
-<div class="container-fluid container" style="background-color:yellow; width: 60%;">
+<div class="container-fluid container" style="background-color:yellow; width: 100%;">
 	<h3>Preview</h3>
    <ol id="myList"></ol>
 </div>
 
-<div id="all_data" style="display: block;" > 
-	<div>
-
-	</div> 
-</div>
 
 <!-- all functions are here -->
 <script>
@@ -537,30 +548,25 @@ function remove_opt(button) {
 </script>
 <script>
 	function show(){
-		var parent = document.getElementById("all_data");
-		var old_data_div =parent.querySelector("div");
-		old_data_div.remove();
+		var myinput1 = document.getElementById("table1");
+		var myinput2 = document.getElementById("table2");
+		var myinput3 = document.getElementById("table3");
+		var myinput4 = document.getElementById("table4");
+		var myinput5 = document.getElementById("table5");
 
-		var new_data_div = document.createElement("div");
-		var total_in = document.createElement("input");
-		new_data_div.appendChild(total_in);
-		parent.appendChild(new_data_div);
-
-		var allq_title = document.getElementsByClassName("mainQ");
-		var total = allq_title.length
-		total_in.setAttribute("value", total);
-
-		var text = "";
-		for (var i = 0; i < total; i++) {
+		var sp1 = "#~#";
+		var text1 = "";
+		for (var i = 0; i < 5; i++) {
 			
 		text += "The number is " + i + "<br>";
 		}
-		var desc = document.createElement("input");
-		desc.setAttribute("name", "all_Q");
-		desc.setAttribute("type", "text");
-		new_data_div.appendChild(desc);
-		desc.setAttribute("value", text);
+		myinput1.setAttribute("value", text);
+		myinput2.setAttribute("value", text);
+		myinput3.setAttribute("value", text);
+		myinput4.setAttribute("value", text);
+		myinput5.setAttribute("value", text);
 
+		//document.getElementById("save_form").submit();
 	}
 </script>
 </body>

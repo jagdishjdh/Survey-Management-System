@@ -82,23 +82,23 @@
             			{% csrf_token %}
                         <div class="row row-space">
                             <div class="col-2 input-group">
-                                <input class="input--style-1" type="text" placeholder="First Name" name="fname">
+                                <input class="input--style-1" type="text" placeholder="First Name" name="fname" required>
                             </div>
                             <div class="col-2 input-group">
-                                <input class="input--style-1" type="text" placeholder="Last Name" name="lname">                                
+                                <input class="input--style-1" type="text" placeholder="Last Name" name="lname" required>                                
                             </div>
                         </div>
                         <div class="input-group">
-                                <input class="input--style-1" type="text" placeholder="Username" name="uname">
+                                <input class="input--style-1" type="text" placeholder="Username" name="uname" required>
                         </div>
                         <div class="input-group">
-                                <input class="input--style-1" type="email" placeholder="Email" name="email">
+                                <input class="input--style-1" type="email" placeholder="Email" name="email" required>
                         </div>
                         <div class="input-group">
-                                <input class="input--style-1" type="password" placeholder="Password" name="pass1">
+                                <input class="input--style-1" type="password" placeholder="Password" name="pass1" required>
                         </div>
                         <div class="input-group">
-                                <input class="input--style-1" type="password" placeholder="Retype Password" name="pass2">
+                                <input class="input--style-1" type="password" placeholder="Retype Password" name="pass2" required>
                         </div>
                         <div class="p-t-20">
                             <button class="btn btn--radius btn--green" type="submit">Submit</button>

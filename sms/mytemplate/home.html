@@ -10,7 +10,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
-<body>
+<body style="background-color:aqua;">
 
 	<nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
 		<a class="navbar-brand" href="#">Bash Overflow</a>
@@ -23,8 +23,24 @@
 			</li>
 		</ul>
 	</nav>
+	<h1 style="background-color: yellowgreen;"> Create your form</h1>
+			<br>
+				<button onclick="login()">Login </button> <br>  <br> 
+				<button onclick="register()">Register </button> <br>  <br>
+
+	    <!-- <ul> 
+			<li><a href="login">Login</a></li>
+            <li><a href="register">Register</a></li>
+		</ul> -->
+
+		<script>
+				function login(){
+					window.location.href ="login"
+			}
+			function register(){
+				window.location.href ="register"
+		}
+	</script>
 
 </body>
 </html>
-
-
