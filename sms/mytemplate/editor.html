@@ -26,14 +26,14 @@
     background-color: transparent;border-bottom: 3px dotted green;
   }
   .form_ttl{
-    border: none; border-color: transparent; font-size: 20px; width:30%%;
+    border: none; border-color: transparent; font-size: 20px; width:30%;
     background-color: transparent;border-bottom: 3px solid blue; margin : 10px;
   }
   .option{
     border: none; border-color: transparent; font-size: 20px;
     background-color: transparent;color: blue;
   }
-  .textans, .otheroptn, .form_desc{
+  .textans, .otheroptn{
     border: none; border-color: transparent; font-size: 20px;
     background-color: transparent; border-bottom: 3px solid blue; margin: 8px;
   }
@@ -123,7 +123,7 @@ input:checked + .slider:before {
 }
 </style>
 </head>
-<body data-spy="scroll" data-offset="125">
+<body data-spy="scroll" data-offset="125" onload="crtdiv()">
 
 <div class="container-fluid" style="background-color:rgb(102, 204, 255); height: 70px; text-align: center;">
   <h1>create your form</h1>
@@ -131,11 +131,11 @@ input:checked + .slider:before {
 
 <div class="container-fluid" style="background-color:rgb(255, 153, 0);">
 	<a href="/user/">Dashboard</a>
-	<input type="text" name="form_title" class="form_ttl" value="{{form.survey.title}}">
-	<input type="text" name="form_desc" class="form_desc" value="{{form.survey.desc}}">
+	<input type="text" name="form_title" id="form_title1" class="form_ttl" value="{{form.survey.title}}">
+	<input type="text" name="form_desc" id="form_desc1" class="form_ttl" value="{{form.survey.desc}}">
 	<span> accept response till :-</span>
-	<input type="date" name="form_exdate" >
-	<input type="time" name="form_extime" >
+	<input type="date" name="form_exdate" id="form_exdate1" class="form_ttl" >
+	<input type="time" name="form_extime" id="form_extime1" class="form_ttl" >
 	 
 
 	<!-- {% for section, ques_dict in form.dictionary.items %}
@@ -220,6 +220,7 @@ function crtdiv() {
 
   label.setAttribute("class","switch" )
   rcheckbox.setAttribute("type","checkbox" )
+  rcheckbox.setAttribute("class","toggle" )
   round.setAttribute("class","slider round" )
   
   var rmtext = document.createTextNode("remove");
@@ -259,9 +260,12 @@ function Delete(button) {
   }
 function Copy(button) {
   var parent = button.parentNode;
+  var qtype_index = parent.getElementsByClassName("Qtype")[0].selectedIndex;
   var clone = parent.cloneNode(true);
 
   var node = document.createElement("LI");
+  var qtype2 = clone.getElementsByClassName("Qtype")[0];
+  qtype2.options[qtype_index].selected = true;
   node.appendChild(clone);
   document.getElementById("myList").appendChild(node);
 }
@@ -554,19 +558,51 @@ function remove_opt(button) {
 		var myinput4 = document.getElementById("table4");
 		var myinput5 = document.getElementById("table5");
 
-		var sp1 = "#~#";
-		var text1 = "";
-		for (var i = 0; i < 5; i++) {
-			
-		text += "The number is " + i + "<br>";
-		}
-		myinput1.setAttribute("value", text);
-		myinput2.setAttribute("value", text);
-		myinput3.setAttribute("value", text);
-		myinput4.setAttribute("value", text);
-		myinput5.setAttribute("value", text);
+		var sp1 = " #~# ", sp2=" ## ",sp3=" #@# ";
+		var text1 = "";                          //sec_deleted .....ids
+		var text2 = "";                          //Q_deleted ..... ids
+		var text3 = "";                          //survey_update
+		var text4 = "";                          //sec_update
+    var text5 = "";                          //Q_update
+    
+    var header = document.getElementsByClassName("form_ttl");
+		for(var i = 0; i < 4; i++) {		
+		text3 += header[i].value + sp1;
+    }
+    var Q_div =  document.getElementsByClassName("oneq");
+    var length5 = Q_div.length;
+    var mainQ , qtype, req,list1,list2,list11,list22,optnlength,other,optns;
 
-		//document.getElementById("save_form").submit();
+		for(var i = 0; i < length5; i++) {
+      parent = Q_div[i];
+      mainQ = parent.getElementsByClassName("mainQ")[0].value;
+      qtype = parent.getElementsByClassName("Qtype")[0].selectedIndex;
+      req = parent.getElementsByClassName("toggle")[0].checked;
+      if(qtype >=2 && qtype<=4){
+        list1 =  parent.getElementsByTagName("ul")[0];
+        list2 =  parent.getElementsByTagName("ul")[1];
+        list11 =  list1.getElementsByTagName("input");
+        list22 =  list2.getElementsByTagName("li");
+        if(list22.length >=2){other = 1;}
+        else{other = 0;}
+         optnlength = list11.length;
+         optns="";
+         for(var optnum=0; optnum<optnlength;optnum++){
+            optns+= list11[optnum].value  + sp3;
+         }
+      } 
+      else{other = -1; optnlength = -1,optns="";}
+       
+      text5 += "-1" + sp2 +"1" + sp2 + qtype + sp2 + req + sp2 + mainQ +sp2 + other + 
+               sp2 + optnlength + sp2 + optns + sp1 ;
+      }
+  
+    
+		myinput1.setAttribute("value", text1);
+		myinput2.setAttribute("value", text2);
+		myinput3.setAttribute("value", text3);
+		myinput4.setAttribute("value", text4);
+		myinput5.setAttribute("value", text5);
 	}
 </script>
 </body>
