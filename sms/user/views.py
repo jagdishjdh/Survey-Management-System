@@ -40,10 +40,22 @@ def editor(request, sur_id=None):
         return redirect('/user')
 
     if request.method == 'POST':
-        str11 = request.POST['input2']
+        str1 = request.POST['input1']
+        str2 = request.POST['input2']
+        str3 = request.POST['input3']
+        str4 = request.POST['input4']
+        str5 = request.POST['input5']
         print('***************************************')
-        print(str11)
-        
+        print(str1)
+        print('***************************************')
+        print(str2)
+        print('***************************************')
+        print(str3)
+        print('***************************************')
+        print(str4)
+        print('***************************************')
+        print(str5)
+        print('***************************************')        
 
     if request.user.is_authenticated:
         user = request.user
