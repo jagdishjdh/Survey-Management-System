@@ -47,7 +47,7 @@ def edit_profile(request):
             pass1 = request.POST['pass1']
             pass2 = request.POST['pass2']
 
-            if pass1 == "" or pass1 == pass2:
+            if (pass1 == "" and pass2 == "") or pass1 == pass2:
                 if User.objects.filter(email=email).exclude(username=user.username).exists():
                     messages.info(request, 'email is already registered')
                     return redirect('/user/editprofile')
@@ -55,7 +55,8 @@ def edit_profile(request):
                     user.first_name = fname
                     user.last_name = lname
                     user.email = email
-                    user.set_password(pass1)
+                    if pass1 != "":
+                        user.set_password(pass1)
                     user.save()
                     messages.info(request,"Details Updated")
                     # return redirect('/user/editprofile')
@@ -83,7 +84,7 @@ def create_survey(request):
         return render(request, 'login.html')
 
 def editor(request, sur_id=None):
-    if sur_id == None:
+    if sur_id is None:
         return redirect('/user')
 
     if request.user.is_authenticated:
@@ -97,12 +98,22 @@ def editor(request, sur_id=None):
         else:
             # if this is post request then data is to be saved first
             if request.method == 'POST':
-                ques_update = request.POST['q_update'] # #~# , ##
+                ques_update = request.POST['q_update'] # #~# , ##, #@#
                 sec_update = request.POST['sec_update'] # #~# , ##
                 sur_update = request.POST['sur_update'] # #~#
                 ques_del = request.POST['q_del'] # ,
                 sec_del = request.POST['sec_del'] # ,
 
+                print("****************************")
+                print(ques_update)
+                print("****************************")
+                print(sec_update)
+                print("****************************")
+                print(sur_update)
+                print("****************************")
+                print(ques_del)
+                print("****************************")
+                print(sec_del)
 
             sec_lst = Section.objects.filter(survey=sur[0])
             
@@ -146,5 +157,26 @@ def delete_survey(request, sur_id=None):
         messages.info(request, 'Please Login First')
         return render(request, 'login.html')
 
-def preview(request):
-    pass
+def preview(request, sur_id=None):
+    # if this is post request then data is to be saved first
+    if sur_id is  not None:
+        sur = Survey.objects.filter(id=sur_id)
+        sec_lst = Section.objects.filter(survey=sur[0])
+        
+        # creating form object to be sent to editor page
+        dic = {}
+        for sec in sec_lst:
+            ques_lst = Question.objects.filter(section=sec)
+            q_dic = {}
+
+            for q in ques_lst:
+                opt_lst = Options.objects.filter(question=q)
+                q_dic[q] = list(opt_lst)
+            
+            dic[sec] = q_dic
+
+        complete_survey = form(sur[0],dic)
+        # form object created
+        return render(request, 'preview.html', {'form':complete_survey})
+    else:
+        return redirect('/user')

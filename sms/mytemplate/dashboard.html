@@ -33,7 +33,8 @@
 		
 		{% for survey in surveys %}
 			<div><span>{{survey.title}}</span>
-				<a href="editor/{{survey.id}}">Open</a>
+				<a href="editor/{{survey.id}}">Edit</a>
+				<a href="preview/{{survey.id}}">Preview</a>
 				<span onclick="deletion( '{{survey.title}}','{{survey.id}}')"> delete </span> <br>
 			</div>
 		{% endfor %}
