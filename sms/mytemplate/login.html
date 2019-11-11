@@ -27,11 +27,48 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'login/css/util.css'%}">
 	<link rel="stylesheet" type="text/css" href="{% static 'login/css/main.css'%}">
 <!--===============================================================================================-->
+<style>
+  .logo {
+		line-height: 60px;
+		position: fixed;
+		float: left;
+		margin: 16px 46px;
+		color: #fff;
+		font-weight: bold;
+		font-size: 20px;
+		letter-spacing: 2px;
+  }
+  nav {
+		position: fixed;
+		width: 100%;
+		line-height: 60px;
+  }
+  .menu-icon {
+		line-height: 60px;
+		width: 100%;
+		background: #000;
+		text-align: right;
+		box-sizing: border-box;
+		padding: 15px 24px;
+		cursor: pointer;
+		color: #fff;
+		display: none;
+  }
+</style>
 </head>
 <body>
-	
+		<header>
+			<nav>
+				<div class="menu-icon">
+					<i class="fa fa-bars fa-2x"></i>
+				</div>
+				<div class="logo">
+					<a href="/"> HOME </a>
+				</div>
+			</nav>
+			</header>
 	<div class="limiter">
-		<div class="container-login100">
+		<div class="container-login100">			
 			<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-50">
 				<form class="login100-form validate-form" action="/login/" method="POST">
 					{% csrf_token %}
@@ -58,7 +95,7 @@
 
 					<div>
 						{% for message in messages %}
-							<span style= "font-size: 20px;color:rgb(121, 4, 4);">
+							<span style="text-align: center;font-size: 20px;color:rgb(121, 4, 4);">
 								{{message}}
 							</span>
 						{% endfor %}

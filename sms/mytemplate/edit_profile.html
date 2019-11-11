@@ -22,10 +22,76 @@
 
     <!-- Main CSS-->
     <link href="{% static 'register/css/main.css' %}" rel="stylesheet" media="all">
+    <style>          
+            .logo {
+                  line-height: 60px;
+                  position: fixed;
+                  float: left;
+                  margin: 16px 46px;
+                  color: #fff;
+                  font-weight: bold;
+                  font-size: 20px;
+                  letter-spacing: 2px;
+            }
+            nav {
+                  position: fixed;
+                  width: 100%;
+                  line-height: 60px;
+            }
+            nav a {
+                  text-decoration: none;
+                  color: rgb(63, 60, 60);
+                  font-size: 16px;
+                  padding: 15px 24px;
+            }
+            body {
+                background-color: rgb(215, 234, 250);
+            }
+            .menu-icon {
+                  line-height: 60px;
+                  width: 100%;
+                  background: #000;
+                  text-align: right;
+                  box-sizing: border-box;
+                  padding: 15px 24px;
+                  cursor: pointer;
+                  color: #fff;
+                  display: none;
+            }
+            .button {
+                background-color: #4CAF50; /* Green */
+                border: none;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+                -webkit-transition-duration: 0.4s; /* Safari */
+                transition-duration: 0.4s;
+            }
+
+            .button1 {
+                box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+            }
+                    
+      </style>
 </head>
 
 <body>
-    <div class="page-wrapper bg-blue p-t-100 p-b-100 font-robo">
+        <header>
+                <nav>
+                    <div class="menu-icon">
+                        <i class="fa fa-bars fa-2x"></i>
+                    </div>
+                    <div class="logo1">
+                        <a href="/user/"> Dashboard </a>
+                    </div>
+                </nav>
+            </header>
+    <div class="page-wrapper p-t-100 p-b-100 font-robo">
         <div class="wrapper wrapper--w680">
             <div class="card card-1">
                 <div class="card-body">
@@ -41,22 +107,28 @@
                             </div>
                         </div>
                         <div class="input-group">
-                                <p class="input--style-1" type="text" placeholder="Username" name="uname">{{user.username}} </p>
+                                <p class="input--style-1" type="text" placeholder="Username" name="uname">(username) {{user.username}} </p>
                         </div>
                         <div class="input-group">
                                 <input class="input--style-1" type="email" placeholder="Email" name="email" value="{{user.email}}">
                         </div>
-                        <div class="input-group">
-                                <input class="input--style-1" type="password" placeholder="Password" name="pass1">
+
+                        <div id="passwd-sec" style="display:none">
+                            <div class="input-group">
+                                    <input class="input--style-1" type="password" placeholder="Password" name="pass1" id="pass1" value="">
+                            </div>
+                            <div class="input-group">
+                                    <input class="input--style-1" type="password" placeholder="Confirm Password" id="pass2" name="pass2" value="">
+                            </div>
                         </div>
-                        <div class="input-group">
-                                <input class="input--style-1" type="password" placeholder="Retype Password" name="pass2">
-                        </div>
+
+                        <button class="btn btn--radius btn--green" type="button" id="change-pass" onclick="showPasswd()" >Click to Change Password</button>
+
                         <div class="p-t-20">
                             <button class="btn btn--radius btn--green" type="submit">Update</button>
                         </div>
                         {% for message in messages %}
-							<span style= "font-size: 16px;color:rgb(121, 4, 4);">
+							<span style= "font-size: 16px;color:rgb(155, 21, 21);">
 								{{message}}
 							</span>
 						{% endfor %}
@@ -75,6 +147,20 @@
 
     <!-- Main JS-->
     <script src="{% static 'register/js/global.js' %}"></script>
+    <script>
+        function showPasswd(){
+            if (document.getElementById("change-pass").innerHTML == "Click to Change Password"){
+
+                document.getElementById("passwd-sec").style.display = "block";
+                document.getElementById("change-pass").innerHTML = "Don't Change Password";
+            }else{
+                document.getElementById("passwd-sec").style.display = "none";
+                document.getElementById("pass1").value = "";
+                document.getElementById("pass2").value = "";
+                document.getElementById("change-pass").innerHTML = "Click to Change Password";
+            }
+        }
+    </script>
 
 </body><!-- This templates was made by Colorlib (https://colorlib.com) -->
 
