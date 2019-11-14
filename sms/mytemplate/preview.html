@@ -5,5 +5,22 @@
     </head>
     <body>
         <h2>Preview</h2>
+        {% for sec , qdict in form.dictionary.items %}
+        <p>ttl {{ sec.title }}</p>
+        <p>no {{ sec.section_no }}</p>
+        <p>{{ sec.id }}</p>
+                 {% for q , optn in qdict.items %}
+
+                 vdf {{q.desc}}
+                 {{q.q_type}}
+                 {{q.required}}
+                  {{optn}}
+
+
+                
+
+                 {% endfor%}
+
+        {% endfor%}
     </body>
 </html>

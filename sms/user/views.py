@@ -95,11 +95,11 @@ def editor(request, sur_id=None):
 
                 print("****************************")
                 print(ques_update)
-                ques_upd_lst = re.split(" #~# ",ques_update)[:-1] 
-                for i in range(len(ques_upd_lst)):
-                    ques_upd_lst[i] = re.split(" ## ",ques_upd_lst[i])
-                    ques_upd_lst[i][-1] = re.split(" #@# ",ques_upd_lst[i][-1])[:-1]
-                print(ques_upd_lst)
+                # ques_upd_lst = re.split(" #~# ",ques_update)[:-1] 
+                # for i in range(len(ques_upd_lst)):
+                #     ques_upd_lst[i] = re.split(" ## ",ques_upd_lst[i])
+                #     ques_upd_lst[i][-1] = re.split(" #@# ",ques_upd_lst[i][-1])[:-1]
+                # print(ques_upd_lst)
 
                 # for q in ques_upd_lst:
                 #     sec = Section.objects.filter(survey=survey,section_no=q[1])
@@ -120,28 +120,28 @@ def editor(request, sur_id=None):
                 # print(sec_update)
 
 
-                print("****************************")
+                print("*************hav***************")
                 print(sur_update)
-                sur_upd_lst = re.split(" #~# ",sur_update)[:-1]
-                survey.title = sur_upd_lst[0]
-                survey.desc = sur_upd_lst[1]
-                if sur_upd_lst[2] != "":
-                    survey.endDate = datetime.strptime(sur_upd_lst[2], "%Y-%m-%dT%H:%M")
-                else:
-                    survey.endDate = None
-                survey.save()
+                # sur_upd_lst = re.split(" #~# ",sur_update)[:-1]
+                # survey.title = sur_upd_lst[0]
+                # survey.desc = sur_upd_lst[1]
+                # if sur_upd_lst[2] != "":
+                #     survey.endDate = datetime.strptime(sur_upd_lst[2], "%Y-%m-%dT%H:%M")
+                # else:
+                #     survey.endDate = None
+                # survey.save()
                 # print(survey.endDate)
 
                 print("****************************")
-                # print(ques_del)
+                print(ques_del)
                 # if ques_del != "":
                 #     q_id_del = [int(x) for x in re.split(",",ques_del)]
                 #     ques_lst_del = Question.objects.filter(id__in=q_id_del)
                 #     for q in ques_lst_del:
                 #         q.delete()
 
-                # print("****************************")
-                # print(sec_del)
+                print("****************************")
+                print(sec_del)
                 # if sec_del != "":
                 #     sec_id_del = [int(x) for x in re.split(",",sec_del)]
                 #     sec_lst_del = Section.objects.filter(id__in=sec_id_del)

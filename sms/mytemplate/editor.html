@@ -13,8 +13,9 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 
   <link rel="stylesheet" href="{% static 'editor.css' %}">
+
 </head>
-<body data-spy="scroll" data-offset="125" onload="crtdiv()">
+<body data-spy="scroll" data-offset="125" onload="crtsec()">
 
   <div class="container-fluid" style="background-color:rgb(102, 204, 255); height: 70px; text-align: center;">
     <a href="/user/" style="float: left;">Dashboard</a>
@@ -29,14 +30,16 @@
     <span> accept response till :-</span>
     <input type="datetime-local" name="form_exdate" id="form_exdate1" class="form_ttl" 
                                       style="width: fit-content;" value="{{form.survey.endDate|date:'Y-m-d\TH:i'}}">
-    <!-- <input type="text" name="form_extime" id="form_extime1" class="form_ttl" style="display: block;" placeholder="{{form.survey.endDate|date:'Y-m-d\TH:i'}}" > -->
-    
+    /
   </div>
   <!-- buttons -->
   <div data-spy="affix" data-offset-top="125" class="container-fluid" 
     style="background-color: rgb(255, 102, 255); text-align: center; ">
 
-        <button onclick="crtdiv()" style="margin: 8px; font-size: 20px;"> Add a question </button>
+    <button onclick="crtQ()" style="margin: 8px; font-size: 20px;"> Add a question </button>
+    <p style="display: inline;">to section</p>
+    <select id="selected_sec" style="display: inline; font-size:20px;"></select>
+    <button onclick="crtsec()" style="margin: 8px; font-size: 20px;"> New section </button>
 
       <form id="save_form" action="/user/editor/{{form.survey.id}}" method="POST" style="display: inline;">
         {% csrf_token %}
@@ -55,10 +58,12 @@
   <!-- all question -->
   <div class="container-fluid container" style="background-color:yellow; width: 100%;">
     <h3>Preview</h3>
-    <ol id="myList"></ol>
-  </div>
+    <ol id="seclist"></ol>
 
+  </div>
+  
   <!-- all functions are here -->
   <script src="{% static 'editor.js' %}"></script>
+  
 </body>
 </html>
