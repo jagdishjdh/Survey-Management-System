@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from .models import *
+import re 
+from datetime import datetime
 
 class form:
      def __init__(self,survey,dic):
@@ -21,20 +23,6 @@ def dashboard(request):
     else:
         messages.info(request, 'Please Login First')
         return render(request, 'login.html')
-
-# def change_password(request):
-#     if request.method == 'POST':
-#         form = PasswordChangeForm(request.user, request.POST)
-#         if form.is_valid():
-#             user = form.save()
-#             update_session_auth_hash(request, user)  # Important!
-#             messages.success(request, 'Your password was successfully updated!')
-#             return redirect('change_password')
-#         else:
-#             messages.error(request, 'Please correct the error below.')
-#     else:
-#         form = PasswordChangeForm(request.user)
-#     return render(request, 'change_password.html', {'form': form})
 
 def edit_profile(request):
     if request.user.is_authenticated:
@@ -97,6 +85,7 @@ def editor(request, sur_id=None):
         
         else:
             # if this is post request then data is to be saved first
+            survey = sur[0]
             if request.method == 'POST':
                 ques_update = request.POST['q_update'] # #~# , ##, #@#
                 sec_update = request.POST['sec_update'] # #~# , ##
@@ -106,16 +95,63 @@ def editor(request, sur_id=None):
 
                 print("****************************")
                 print(ques_update)
-                print("****************************")
-                print(sec_update)
+                ques_upd_lst = re.split(" #~# ",ques_update)[:-1] 
+                for i in range(len(ques_upd_lst)):
+                    ques_upd_lst[i] = re.split(" ## ",ques_upd_lst[i])
+                    ques_upd_lst[i][-1] = re.split(" #@# ",ques_upd_lst[i][-1])[:-1]
+                print(ques_upd_lst)
+
+                # for q in ques_upd_lst:
+                #     sec = Section.objects.filter(survey=survey,section_no=q[1])
+                #     if q[0] == -1:
+                #         ques = Question(section=sec,desc=q[1],q_type=q[1],required=q[1])
+                #         ques.save()
+                #         for opt_txt in q[7]:
+                #             op = Options(question=ques,value=opt_txt)
+                #             op.save()
+                #     else:
+                #         ques = Question.objects.filter(id=q[0])
+                #         ques.section = sec
+                #         ques.desc = q[1]
+                #         ques.q_type = q[1]
+                #         ques.required = q[1]
+
+                # print("****************************")
+                # print(sec_update)
+
+
                 print("****************************")
                 print(sur_update)
-                print("****************************")
-                print(ques_del)
-                print("****************************")
-                print(sec_del)
+                sur_upd_lst = re.split(" #~# ",sur_update)[:-1]
+                survey.title = sur_upd_lst[0]
+                survey.desc = sur_upd_lst[1]
+                if sur_upd_lst[2] != "":
+                    survey.endDate = datetime.strptime(sur_upd_lst[2], "%Y-%m-%dT%H:%M")
+                else:
+                    survey.endDate = None
+                survey.save()
+                # print(survey.endDate)
 
-            sec_lst = Section.objects.filter(survey=sur[0])
+                print("****************************")
+                # print(ques_del)
+                # if ques_del != "":
+                #     q_id_del = [int(x) for x in re.split(",",ques_del)]
+                #     ques_lst_del = Question.objects.filter(id__in=q_id_del)
+                #     for q in ques_lst_del:
+                #         q.delete()
+
+                # print("****************************")
+                # print(sec_del)
+                # if sec_del != "":
+                #     sec_id_del = [int(x) for x in re.split(",",sec_del)]
+                #     sec_lst_del = Section.objects.filter(id__in=sec_id_del)
+                #     for se in sec_lst_del:
+                #         se.delete()
+
+                # print("****************************")
+
+
+            sec_lst = Section.objects.filter(survey=survey)
             
             # creating form object to be sent to editor page
             dic = {}
@@ -129,7 +165,7 @@ def editor(request, sur_id=None):
                 
                 dic[sec] = q_dic
 
-            complete_survey = form(sur[0],dic)
+            complete_survey = form(survey,dic)
             # form object created
             return render(request, 'editor.html', {'form':complete_survey})
 

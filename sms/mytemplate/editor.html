@@ -27,8 +27,9 @@
     <input type="text" name="form_title" id="form_title1" class="form_ttl" value="{{form.survey.title}}">
     <input type="text" name="form_desc" id="form_desc1" class="form_ttl" value="{{form.survey.desc}}">
     <span> accept response till :-</span>
-    <input type="date" name="form_exdate" id="form_exdate1" class="form_ttl" >
-    <input type="time" name="form_extime" id="form_extime1" class="form_ttl" >
+    <input type="datetime-local" name="form_exdate" id="form_exdate1" class="form_ttl" 
+                                      style="width: fit-content;" value="{{form.survey.endDate|date:'Y-m-d\TH:i'}}">
+    <!-- <input type="text" name="form_extime" id="form_extime1" class="form_ttl" style="display: block;" placeholder="{{form.survey.endDate|date:'Y-m-d\TH:i'}}" > -->
     
   </div>
   <!-- buttons -->

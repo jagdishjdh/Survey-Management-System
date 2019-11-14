@@ -385,7 +385,7 @@ function show(){
     var text5 = "";                          //Q_update
 
     var header = document.getElementsByClassName("form_ttl");
-    for(var i = 0; i < 4; i++) {		
+    for(var i = 0; i < header.length; i++) {		
     text3 += header[i].value + sp1;
     }
     var Q_div =  document.getElementsByClassName("oneq");
