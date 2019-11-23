@@ -5,19 +5,20 @@
     </head>
     <body>
         <h2>Preview</h2>
+        <h3>{{form.survey.title}}</h3>
+        <h3>{{form.survey.desc}}</h3>
+        <h3>{{form.survey.endDate|date:'Y-m-d\TH:i'}}</h3>
         {% for sec , qdict in form.dictionary.items %}
-        <p>ttl {{ sec.title }}</p>
-        <p>no {{ sec.section_no }}</p>
-        <p>{{ sec.id }}</p>
+        <h3>sec_ttl {{ sec.title }}</h3>
+        <p>sec_desc {{ sec.desc }}</p>
+        <p>sec_no {{ sec.section_no }}</p>
+        <p>sec_id {{ sec.id }}</p>
+        <p> <input type="" name=""> {{qdict}}</p>
                  {% for q , optn in qdict.items %}
 
-                 vdf {{q.desc}}
-                 {{q.q_type}}
-                 {{q.required}}
-                  {{optn}}
-
-
-                
+               <p>   {{q.desc}}    </p>
+                <p>   {{q.q_type}}    </p>
+                <p>   {{q.required}}    </p>
 
                  {% endfor%}
 
