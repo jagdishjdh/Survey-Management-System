@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 from .models import *
 import re 
 from datetime import datetime
@@ -11,6 +12,9 @@ class form:
          self.survey = survey
          self.dictionary = dic
 
+typearr = ["Short Ans", "Paragraph", "Multiple Choice",
+        "Checkboxes", "Drop-down", "File Upload", "Linear scale",
+        "Multiple choice grid", "Tick box grid", "Date", "Time"]
 
 # Create your views here.
 def dashboard(request):
@@ -63,7 +67,7 @@ def create_survey(request):
         user1 = request.user
         new_sur = Survey(title="New One",desc="",endDate=None)
         new_sur.save()
-        new_sec = Section(survey=new_sur,section_no=1,title="",desc="")
+        new_sec = Section(survey=new_sur,section_no=1,title="New Section",desc="")
         new_sec.save()
         User_survey(user=user1,survey=new_sur).save()
         return editor(request, new_sur.id)
@@ -84,17 +88,18 @@ def editor(request, sur_id=None):
             return redirect('/user')
         
         else:
-            # if this is post request then data is to be saved first
             survey = sur[0]
+            # if this is post request then data is to be saved first
             if request.method == 'POST':
-                ques_update = request.POST['q_update'] # #~# , ##, #@#
-                sec_update = request.POST['sec_update'] # #~# , ##
-                sur_update = request.POST['sur_update'] # #~#
-                ques_del = request.POST['q_del'] # ,
-                sec_del = request.POST['sec_del'] # ,
+                pass
+                # ques_update = request.POST['q_update'] # #~# , ##, #@#
+                # sec_update = request.POST['sec_update'] # #~# , ##
+                # sur_update = request.POST['sur_update'] # #~#
+                # ques_del = request.POST['q_del'] # ,
+                # sec_del = request.POST['sec_del'] # ,
 
-                print("****************************")
-                print(ques_update)
+                # print("****************************")
+                # print(ques_update)
                 # ques_upd_lst = re.split(" #~# ",ques_update)[:-1] 
                 # for i in range(len(ques_upd_lst)):
                 #     ques_upd_lst[i] = re.split(" ## ",ques_upd_lst[i])
@@ -120,8 +125,8 @@ def editor(request, sur_id=None):
                 # print(sec_update)
 
 
-                print("*************hav***************")
-                print(sur_update)
+                # print("****************************")
+                # print(sur_update)
                 # sur_upd_lst = re.split(" #~# ",sur_update)[:-1]
                 # survey.title = sur_upd_lst[0]
                 # survey.desc = sur_upd_lst[1]
@@ -130,10 +135,10 @@ def editor(request, sur_id=None):
                 # else:
                 #     survey.endDate = None
                 # survey.save()
-                # print(survey.endDate)
+                # # print(survey.endDate)
 
-                print("****************************")
-                print(ques_del)
+                # print("****************************")
+                # print(ques_del)
                 # if ques_del != "":
                 #     q_id_del = [int(x) for x in re.split(",",ques_del)]
                 #     ques_lst_del = Question.objects.filter(id__in=q_id_del)
@@ -141,7 +146,7 @@ def editor(request, sur_id=None):
                 #         q.delete()
 
                 print("****************************")
-                print(sec_del)
+                # print(sec_del)
                 # if sec_del != "":
                 #     sec_id_del = [int(x) for x in re.split(",",sec_del)]
                 #     sec_lst_del = Section.objects.filter(id__in=sec_id_del)
@@ -160,7 +165,7 @@ def editor(request, sur_id=None):
                 q_dic = {}
 
                 for q in ques_lst:
-                    opt_lst = Options.objects.filter(question=q)
+                    opt_lst = Option.objects.filter(question=q)
                     q_dic[q] = list(opt_lst)
                 
                 dic[sec] = q_dic
@@ -195,24 +200,29 @@ def delete_survey(request, sur_id=None):
 
 def preview(request, sur_id=None):
     # if this is post request then data is to be saved first
-    if sur_id is  not None:
-        sur = Survey.objects.filter(id=sur_id)
-        sec_lst = Section.objects.filter(survey=sur[0])
-        
-        # creating form object to be sent to editor page
-        dic = {}
-        for sec in sec_lst:
-            ques_lst = Question.objects.filter(section=sec)
-            q_dic = {}
-
-            for q in ques_lst:
-                opt_lst = Options.objects.filter(question=q)
-                q_dic[q] = list(opt_lst)
+    if sur_id is not None:
+        try:
+            survey = Survey.objects.get(id=sur_id)
+            sec_lst = Section.objects.filter(survey=survey)
             
-            dic[sec] = q_dic
+            # creating form object to be sent to editor page
+            dic = {}
+            for sec in sec_lst:
+                ques_lst = Question.objects.filter(section=sec)
+                q_dic = {}
 
-        complete_survey = form(sur[0],dic)
-        # form object created
-        return render(request, 'preview.html', {'form':complete_survey})
+                for q in ques_lst:
+                    opt_lst = Option.objects.filter(question=q)
+                    q_dic[q] = list(opt_lst)
+                
+                dic[sec] = q_dic
+
+            complete_survey = form(survey,dic)
+            # form object created
+            return render(request, 'preview.html', {'form':complete_survey})
+
+        except ObjectDoesNotExist:
+            pass
+
     else:
         return redirect('/user')
