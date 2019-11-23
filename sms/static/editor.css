@@ -32,11 +32,11 @@
     border: none; border-color: transparent; font-size: 30px; width:100%;
     background-color: transparent;border-bottom: 3px dotted green;
   }
-  .form_ttl{
-    border: none; border-color: transparent; font-size: 20px; width:30%;
-    background-color: transparent;border-bottom: 3px solid blue; margin : 10px;
+    .form_ttl{
+    border: none; border-color: transparent; font-size: 15px; width:20%;
+    background-color: transparent;border-bottom: 3px solid rgb(30, 122, 228); margin : 10px;
   }
-  .option{
+.option{
     border: none; border-color: transparent; font-size: 20px;
     background-color: transparent;color: blue;
   }

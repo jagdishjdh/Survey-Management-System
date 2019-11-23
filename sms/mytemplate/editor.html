@@ -13,10 +13,16 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 
   <link rel="stylesheet" href="{% static 'editor.css' %}">
+  <style>
+    .form_ttl{
+      border: none; border-color: transparent; font-size: 15px; width:25%;
+      background-color: transparent;border-bottom: 3px solid rgb(30, 122, 228); margin : 10px;
+    }
+    </style>
 
 </head>
 <body data-spy="scroll" data-offset="125" onload="crtsec()">
-
+ 
   <div class="container-fluid" style="background-color:rgb(102, 204, 255); height: 70px; text-align: center;">
     <a href="/user/" style="float: left;">Dashboard</a>
     <h2 style="display: inline;">create your form</h2>
@@ -30,7 +36,8 @@
     <span> accept response till :-</span>
     <input type="datetime-local" name="form_exdate" id="form_exdate1" class="form_ttl" 
                                       style="width: fit-content;" value="{{form.survey.endDate|date:'Y-m-d\TH:i'}}">
-    /
+    <span>Login required</span>
+    <input type="checkbox" name="form_loginreq" class="form_ttl" value="{{form.survey.anonymous}}" style="width: fit-content;">
   </div>
   <!-- buttons -->
   <div data-spy="affix" data-offset-top="125" class="container-fluid" 

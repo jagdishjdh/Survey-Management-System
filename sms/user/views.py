@@ -91,6 +91,7 @@ def editor(request, sur_id=None):
             survey = sur[0]
             # if this is post request then data is to be saved first
             if request.method == 'POST':
+<<<<<<< HEAD
                 pass
                 # ques_update = request.POST['q_update'] # #~# , ##, #@#
                 # sec_update = request.POST['sec_update'] # #~# , ##
@@ -155,6 +156,23 @@ def editor(request, sur_id=None):
 
                 # print("****************************")
 
+=======
+                try:
+                    i = 1
+                    while True:
+                        print("aaaaaaaaaaaaaaaaaaa", i)
+                        a = request.POST['sec_id_'+ str(i)] # #~# , ##, #@#
+                        b = request.POST['sec_title_'+str(i)] # #~# , ##
+                        c = request.POST['sec_desc_'+str(i)] # #~#
+                        d = request.POST['sec_num_'+str(i)] # ,
+                        i= i+1
+                        print("bbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
+                        print(a,b,c,d)
+
+                except:
+                    print("exception aya")
+                
+>>>>>>> e0dc3bd01b9b820ffac7df12432067f70401a0c2
 
             sec_lst = Section.objects.filter(survey=survey)
             
