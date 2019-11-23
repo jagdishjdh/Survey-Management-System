@@ -65,7 +65,6 @@
 }
 
   function Copy_sec(button) {
-    var allseclist
     var parent = button.parentNode;
     var clone = parent.cloneNode(true);
 
@@ -127,6 +126,7 @@
   
     label.setAttribute("class","switch" )
     rcheckbox.setAttribute("type","checkbox" )
+    rcheckbox.setAttribute("class","toggle" )
     round.setAttribute("class","slider round" )
     
     var rmtext = document.createTextNode("remove");
@@ -478,11 +478,17 @@
   }
 
   var allsec_div = document.getElementsByClassName("sec_div");
-  var sec_len = allsec_div.length;
 
-  var Q_div =  document.getElementsByClassName("oneq");
+  for(var s = 0; s < allsec_div.length; s++){
+    curr_sec = allsec_div[s];
+    var secnum = s+1;
+    var title = curr_sec.getElementsByClassName("sec_ttl")[0].value;
+    var desc = curr_sec.getElementsByClassName("sec_desc")[0].value;
+    text4 += "-1" + sp2+ secnum +sp2+ title + sp2 + desc + sp1;
+
+  var Q_div =  curr_sec.querySelectorAll('.oneq');
   var length5 = Q_div.length;
-  var mainQ , qtype, req,list1,list2,list11,list22,optnlength,other,optns;
+  var mainQ , qtype, req,list1,list2,list11,list22,optnlength,other,optns, order;
 
   for(var i = 0; i < length5; i++) {
       parent = Q_div[i];
@@ -503,11 +509,14 @@
           }
       } 
       else{other = -1; optnlength = -1,optns="";}
-
-      text5 += "-1" + sp2 +"1" + sp2 + qtype + sp2 + req + sp2 + mainQ +sp2 + other + 
-              sp2 + optnlength + sp2 + optns + sp1 ;
+      order = i+1;
+    // sp2=##
+    //  text5 = id, secnum, qtype, req, order, other, title, desc,  constraint, options,rows
+      text5 += "-1" + sp2 + secnum + sp2 + qtype + sp2 + req  +sp2 + order +sp2 + other +  sp2 + mainQ +
+             sp2+ "" +sp2+ "" +sp2 + optns + sp2 + "" + sp1 ;
       }
-
+    }
+  
 
   myinput1.setAttribute("value", text1);
   myinput2.setAttribute("value", text2);

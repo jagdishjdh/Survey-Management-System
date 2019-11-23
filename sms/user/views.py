@@ -87,69 +87,21 @@ def editor(request, sur_id=None):
             # if this is post request then data is to be saved first
             survey = sur[0]
             if request.method == 'POST':
-                ques_update = request.POST['q_update'] # #~# , ##, #@#
-                sec_update = request.POST['sec_update'] # #~# , ##
-                sur_update = request.POST['sur_update'] # #~#
-                ques_del = request.POST['q_del'] # ,
-                sec_del = request.POST['sec_del'] # ,
+                try:
+                    i = 1
+                    while True:
+                        print("aaaaaaaaaaaaaaaaaaa", i)
+                        a = request.POST['sec_id_'+ str(i)] # #~# , ##, #@#
+                        b = request.POST['sec_title_'+str(i)] # #~# , ##
+                        c = request.POST['sec_desc_'+str(i)] # #~#
+                        d = request.POST['sec_num_'+str(i)] # ,
+                        i= i+1
+                        print("bbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
+                        print(a,b,c,d)
 
-                print("****************************")
-                print(ques_update)
-                # ques_upd_lst = re.split(" #~# ",ques_update)[:-1] 
-                # for i in range(len(ques_upd_lst)):
-                #     ques_upd_lst[i] = re.split(" ## ",ques_upd_lst[i])
-                #     ques_upd_lst[i][-1] = re.split(" #@# ",ques_upd_lst[i][-1])[:-1]
-                # print(ques_upd_lst)
-
-                # for q in ques_upd_lst:
-                #     sec = Section.objects.filter(survey=survey,section_no=q[1])
-                #     if q[0] == -1:
-                #         ques = Question(section=sec,desc=q[1],q_type=q[1],required=q[1])
-                #         ques.save()
-                #         for opt_txt in q[7]:
-                #             op = Options(question=ques,value=opt_txt)
-                #             op.save()
-                #     else:
-                #         ques = Question.objects.filter(id=q[0])
-                #         ques.section = sec
-                #         ques.desc = q[1]
-                #         ques.q_type = q[1]
-                #         ques.required = q[1]
-
-                # print("****************************")
-                # print(sec_update)
-
-
-                print("*************hav***************")
-                print(sur_update)
-                # sur_upd_lst = re.split(" #~# ",sur_update)[:-1]
-                # survey.title = sur_upd_lst[0]
-                # survey.desc = sur_upd_lst[1]
-                # if sur_upd_lst[2] != "":
-                #     survey.endDate = datetime.strptime(sur_upd_lst[2], "%Y-%m-%dT%H:%M")
-                # else:
-                #     survey.endDate = None
-                # survey.save()
-                # print(survey.endDate)
-
-                print("****************************")
-                print(ques_del)
-                # if ques_del != "":
-                #     q_id_del = [int(x) for x in re.split(",",ques_del)]
-                #     ques_lst_del = Question.objects.filter(id__in=q_id_del)
-                #     for q in ques_lst_del:
-                #         q.delete()
-
-                print("****************************")
-                print(sec_del)
-                # if sec_del != "":
-                #     sec_id_del = [int(x) for x in re.split(",",sec_del)]
-                #     sec_lst_del = Section.objects.filter(id__in=sec_id_del)
-                #     for se in sec_lst_del:
-                #         se.delete()
-
-                # print("****************************")
-
+                except:
+                    print("exception aya")
+                
 
             sec_lst = Section.objects.filter(survey=survey)
             
