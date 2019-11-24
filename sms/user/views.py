@@ -91,16 +91,24 @@ def editor(request, sur_id=None):
             survey = sur[0]
             # if this is post request then data is to be saved first
             if request.method == 'POST':
-<<<<<<< HEAD
                 pass
-                # ques_update = request.POST['q_update'] # #~# , ##, #@#
-                # sec_update = request.POST['sec_update'] # #~# , ##
-                # sur_update = request.POST['sur_update'] # #~#
-                # ques_del = request.POST['q_del'] # ,
-                # sec_del = request.POST['sec_del'] # ,
+                ques_update = request.POST['q_update'] # #~# , ##, #@#
+                sec_update = request.POST['sec_update'] # #~# , ##
+                sur_update = request.POST['sur_update'] # #~#
+                ques_del = request.POST['q_del'] # ,
+                sec_del = request.POST['sec_del'] # ,
 
-                # print("****************************")
-                # print(ques_update)
+                print("****************************")
+                print(ques_update)
+                print("****************************")
+                print(sec_update)
+                print("****************************")
+                print(sur_update)
+                print("****************************")
+                print(ques_del)
+                print("****************************")
+                print(sec_del)
+
                 # ques_upd_lst = re.split(" #~# ",ques_update)[:-1] 
                 # for i in range(len(ques_upd_lst)):
                 #     ques_upd_lst[i] = re.split(" ## ",ques_upd_lst[i])
@@ -156,23 +164,6 @@ def editor(request, sur_id=None):
 
                 # print("****************************")
 
-=======
-                try:
-                    i = 1
-                    while True:
-                        print("aaaaaaaaaaaaaaaaaaa", i)
-                        a = request.POST['sec_id_'+ str(i)] # #~# , ##, #@#
-                        b = request.POST['sec_title_'+str(i)] # #~# , ##
-                        c = request.POST['sec_desc_'+str(i)] # #~#
-                        d = request.POST['sec_num_'+str(i)] # ,
-                        i= i+1
-                        print("bbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
-                        print(a,b,c,d)
-
-                except:
-                    print("exception aya")
-                
->>>>>>> e0dc3bd01b9b820ffac7df12432067f70401a0c2
 
             sec_lst = Section.objects.filter(survey=survey)
             

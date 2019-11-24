@@ -464,18 +464,21 @@
   var myinput3 = document.getElementById("sur_update");
   var myinput4 = document.getElementById("sec_update");
   var myinput5 = document.getElementById("q_update");
+  var myinput6 = document.getElementById("opt_del");
 
   var sp1 = " #~# ", sp2=" ## ",sp3=" #@# ";
-  var text1 = "";                          //sec_deleted .....ids
-  var text2 = "";                          //Q_deleted ..... ids
+  var text1 = "";                          //sec_deleted .....ids  sp2
+  var text2 = "";                          //Q_deleted ..... ids   sp2
   var text3 = "";                          //survey_update
   var text4 = "";                          //sec_update
   var text5 = "";                          //Q_update
+  var text6 = "";                         //opt_deleted
 
   var header = document.getElementsByClassName("form_ttl");
-  for(var i = 0; i < header.length; i++) {    
+  for(var i = 0; i < 3; i++) {    
   text3 += header[i].value + sp1;
   }
+  text3 += header[3].checked + sp1;
 
   var allsec_div = document.getElementsByClassName("sec_div");
 
@@ -484,7 +487,7 @@
     var secnum = s+1;
     var title = curr_sec.getElementsByClassName("sec_ttl")[0].value;
     var desc = curr_sec.getElementsByClassName("sec_desc")[0].value;
-    text4 += "-1" + sp2+ secnum +sp2+ title + sp2 + desc + sp1;
+    text4 += "-1" + sp2+ secnum +sp2+ title + sp2 + desc + sp2+ ""+ sp1;
 
   var Q_div =  curr_sec.querySelectorAll('.oneq');
   var length5 = Q_div.length;
@@ -505,10 +508,10 @@
           optnlength = list11.length;
           optns="";
           for(var optnum=0; optnum<optnlength;optnum++){
-          optns+= list11[optnum].value  + sp3;
+          optns+= "-1" + " #^# " + list11[optnum].value  + sp3;
           }
       } 
-      else{other = -1; optnlength = -1,optns="";}
+      else{other = 0; optnlength = -1,optns="";}
       order = i+1;
     // sp2=##
     //  text5 = id, secnum, qtype, req, order, other, title, desc,  constraint, options,rows
@@ -523,4 +526,5 @@
   myinput3.setAttribute("value", text3);
   myinput4.setAttribute("value", text4);
   myinput5.setAttribute("value", text5);
+  myinput6.setAttribute("value", text6);
 }
