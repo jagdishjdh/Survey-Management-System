@@ -235,6 +235,27 @@ def editor(request, sur_id=None):
         messages.info(request, 'Please Login First')
         return render(request, 'login.html')
 
+def response(request, sur_id=None):
+    if sur_id == None:
+        return redirect('/user')
+        
+    if request.user.is_authenticated:
+        user = request.user
+        # print(sur_id,'****************')
+        sur = Survey.objects.filter(user_survey__user=user, id=sur_id)
+
+        if sur.count() == 0:
+            # means this survey does not belongs to the logged in user
+            return redirect('/user')
+        else:
+            resp = Response.objects.filter(survey=sur[0])
+            return render(request, 'response.html', {'responses':resp, 'sur_id':sur[0].id})
+
+    else:
+        messages.info(request, 'Please Login First')
+        return render(request, 'login.html')
+
+
 def delete_survey(request, sur_id=None):
     if sur_id == None:
         return redirect('/user')
@@ -283,3 +304,23 @@ def preview(request, sur_id=None):
 
     else:
         return redirect('/user')
+
+
+def collab(request,sur_id=None):
+    if sur_id == None:
+        return redirect('/user')
+    if request.user.is_authenticated:
+        user = request.user
+        # print(sur_id,'****************')
+        sur = Survey.objects.filter(user_survey__user=user, id=sur_id)
+
+        if sur.count() == 0:
+            # means this survey does not belongs to the logged in user
+            return redirect('/user')
+        else:
+            # messages.warning(request,"Are you sure to delete the selected Survey?")
+            return render(request, 'collab.html')
+
+    else:
+        messages.info(request, 'Please Login First')
+        return render(request, 'login.html')
