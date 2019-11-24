@@ -10,5 +10,59 @@
     <h1>Response</h1>
     <a href="/user/editor/{{sur_id}}">editor</a> <br>
     <a href="/user/">dashboard</a>
+    <div id="stats"></div>
+    <div id="chartContainer" style="height: 300px; width: 100%;"></div>
 </body>
+<script type="text/javascript">
+  var non_grid_data = "{{non_grid_responses}}";
+  var data = "{{grid_responses}}";
+    window.onload = function () {
+      var chart = new CanvasJS.Chart("chartContainer",
+      {
+        title:{
+        text: "Adding dataPoints"  
+        },
+        data: [
+        {        
+          type: "line",
+          dataPoints: [
+          { y: 71 }
+          ]
+        }
+        ]
+      });
+    
+      chart.render();
+    }
+    function type_of_chart(col_name)
+    {
+        if(col_name==0)
+        return "string";
+        else if(col_name==3)
+        return "doughnut";
+        else if(col_name==2)
+        return "piechart";
+        else if(col_name==4)
+        return "piechart";
+        else if(col_name==5)
+        return "string";
+        else if(col_name==6)
+        return "doughnut";
+        else if(col_name==7)
+        return "piechart";
+        else if(col_name==8)
+        return "piechart";
+        else return "line";
+    }
+
+    function create_data_y(data)
+    {
+        var s = data[0].size();
+        for(var i = 2; i<data.size();i++)
+        {
+            
+        }
+    }
+    </script>
+   <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </html>
