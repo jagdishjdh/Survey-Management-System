@@ -91,78 +91,126 @@ def editor(request, sur_id=None):
             survey = sur[0]
             # if this is post request then data is to be saved first
             if request.method == 'POST':
-                pass
+                sp1 = ' #~# '
+                sp2 = ' ## '
+                sp3 = ' #@# '
                 ques_update = request.POST['q_update'] # #~# , ##, #@#
                 sec_update = request.POST['sec_update'] # #~# , ##
                 sur_update = request.POST['sur_update'] # #~#
-                ques_del = request.POST['q_del'] # ,
-                sec_del = request.POST['sec_del'] # ,
+                ques_del = request.POST['q_del'] # ##
+                sec_del = request.POST['sec_del'] # ##
+                opt_del = request.POST['opt_del'] # ##
+
+                print("****************************")
+                print(sur_update)
+                sur_upd_lst = re.split(" #~# ",sur_update)[:-1]
+                survey.title = sur_upd_lst[0]
+                survey.desc = sur_upd_lst[1]
+                if sur_upd_lst[2] != "":
+                    survey.endDate = datetime.strptime(sur_upd_lst[2], "%Y-%m-%dT%H:%M")
+                else:
+                    survey.endDate = None
+                ano = False
+                if sur_upd_lst[3] == 'true': 
+                    ano = True
+                survey.anonymous = ano
+                survey.save()
+                # print(survey.endDate)
+
+                print("****************************")
+                print(ques_del)
+                if ques_del != "":
+                    q_id_del = [int(x) for x in re.split(" ## ",ques_del)]
+                    ques_lst_del = Question.objects.filter(id__in=q_id_del)
+                    for q in ques_lst_del:
+                        q.delete()
+
+                print("****************************")
+                print(sec_del)
+                if sec_del != "":
+                    sec_id_del = [int(x) for x in re.split(" ## ",sec_del)]
+                    sec_lst_del = Section.objects.filter(id__in=sec_id_del)
+                    for se in sec_lst_del:
+                        se.delete()
+
+                print("****************************")
+                print(opt_del)
+                if opt_del != "":
+                    opt_id_del = [int(x) for x in re.split(" ## ",opt_del)]
+                    opt_lst_del = Option.objects.filter(id__in=opt_id_del)
+                    for op in sec_lst_del:
+                        op.delete()
+
+                print("****************************")
+                print(sec_update)
+                # id, sec_num, title, desc, next_sec(not yet present in model)
+                sec_upd_lst = re.split(sp1,sec_update)[:-1]
+                for i in range(len(sec_upd_lst)):
+                    sec_upd_lst[i] = re.split(sp2,sec_upd_lst[i])
+                # print(sec_upd_lst)
+
+                for s in sec_upd_lst:
+                    if s[0] == '-1':
+                        new_sec = Section(survey=survey,title=s[2],desc=s[3],section_no=int(s[1]))
+                        new_sec.save()
+                    else:
+                        sec = Section.objects.filter(id=int(s[0]))
+                        sec.title = s[2]
+                        sec.desc = s[3]
+                        sec.section_no = int(s[1])
+                        sec.save()
+
 
                 print("****************************")
                 print(ques_update)
-                print("****************************")
-                print(sec_update)
-                print("****************************")
-                print(sur_update)
-                print("****************************")
-                print(ques_del)
-                print("****************************")
-                print(sec_del)
+                # id, sec_no, qtype, req(true/false), order, other(0/1), title, desc, constraint,
+                #  [columns], [rows]
+                ques_upd_lst = re.split(" #~# ",ques_update)[:-1]
+                for i in range(len(ques_upd_lst)):
+                    ques_upd_lst[i] = re.split(" ## ",ques_upd_lst[i])
+                    ques_upd_lst[i][-2] = re.split(" #@# ",ques_upd_lst[i][-2])[:-1]
+                    for k in range(len(ques_upd_lst[i][-2])):
+                        ques_upd_lst[i][-2][k] = re.split(" #^# ",ques_upd_lst[i][-2][k])
 
-                # ques_upd_lst = re.split(" #~# ",ques_update)[:-1] 
-                # for i in range(len(ques_upd_lst)):
-                #     ques_upd_lst[i] = re.split(" ## ",ques_upd_lst[i])
-                #     ques_upd_lst[i][-1] = re.split(" #@# ",ques_upd_lst[i][-1])[:-1]
-                # print(ques_upd_lst)
+                    ques_upd_lst[i][-1] = re.split(" #@# ",ques_upd_lst[i][-1])[:-1]
+                    for k in range(len(ques_upd_lst[i][-1])):
+                        ques_upd_lst[i][-1][k] = re.split(" #^# ",ques_upd_lst[i][-1][k])
+                print(ques_upd_lst)
 
-                # for q in ques_upd_lst:
-                #     sec = Section.objects.filter(survey=survey,section_no=q[1])
-                #     if q[0] == -1:
-                #         ques = Question(section=sec,desc=q[1],q_type=q[1],required=q[1])
-                #         ques.save()
-                #         for opt_txt in q[7]:
-                #             op = Options(question=ques,value=opt_txt)
-                #             op.save()
-                #     else:
-                #         ques = Question.objects.filter(id=q[0])
-                #         ques.section = sec
-                #         ques.desc = q[1]
-                #         ques.q_type = q[1]
-                #         ques.required = q[1]
+                for q in ques_upd_lst:
+                    sec = Section.objects.filter(survey=survey,section_no=q[1])
+                    req = False
+                    if q[3] == 'true': 
+                        req = True
+                    oth = False
+                    if q[5] == '1': 
+                        oth = True
 
-                # print("****************************")
-                # print(sec_update)
+                    if q[0] == '-1':
+                        ques = Question(section=sec,title=q[6],desc=q[7],q_type=int(q[2]),required=req,order=int(q[4]),other=oth)
+                        ques.save()
+                        
+                    else:
+                        ques = Question.objects.filter(id=int(q[0]))
+                        ques.section = sec
+                        ques.desc = q[7]
+                        ques.title = q[6]
+                        ques.q_type = int(q[2])
+                        ques.required = req
+                        ques.other = oth
+                        ques.order = int(q[4])
+                        ques.save()
 
-
-                # print("****************************")
-                # print(sur_update)
-                # sur_upd_lst = re.split(" #~# ",sur_update)[:-1]
-                # survey.title = sur_upd_lst[0]
-                # survey.desc = sur_upd_lst[1]
-                # if sur_upd_lst[2] != "":
-                #     survey.endDate = datetime.strptime(sur_upd_lst[2], "%Y-%m-%dT%H:%M")
-                # else:
-                #     survey.endDate = None
-                # survey.save()
-                # # print(survey.endDate)
-
-                # print("****************************")
-                # print(ques_del)
-                # if ques_del != "":
-                #     q_id_del = [int(x) for x in re.split(",",ques_del)]
-                #     ques_lst_del = Question.objects.filter(id__in=q_id_del)
-                #     for q in ques_lst_del:
-                #         q.delete()
+                    for opt in q[7]:
+                        if opt[0] == '-1':
+                            op = Option(question=ques,value=opt[1])
+                            op.save()
+                        else:
+                            op = Option.objects.filter(id=int(opt[0]))
+                            op.value = opt[1]
+                            op.save()
 
                 print("****************************")
-                # print(sec_del)
-                # if sec_del != "":
-                #     sec_id_del = [int(x) for x in re.split(",",sec_del)]
-                #     sec_lst_del = Section.objects.filter(id__in=sec_id_del)
-                #     for se in sec_lst_del:
-                #         se.delete()
-
-                # print("****************************")
 
 
             sec_lst = Section.objects.filter(survey=survey)

@@ -17,6 +17,7 @@ class Section(models.Model):
     section_no = models.IntegerField()
     title = models.CharField(max_length=100)
     desc = models.TextField()
+    # next_sec
 
 # 3
 class User_survey(models.Model):
