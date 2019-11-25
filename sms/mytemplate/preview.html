@@ -210,12 +210,11 @@
 
 <form id="save_form" action="/user/preview/{{form.survey.id}}" method="POST" style="display: inline;">
 {% csrf_token %}
-    <div>
+    <div style="display: none;">
     <input name="text_answer"   id="text_answer" style="width: 100%;"> <br>
     </div>
     <input type="submit" class="sub_bttn" onclick="mysubmit()" value="Submit" style="margin: 8px; font-size: 20px;">
 </form>
-<button onclick="mysubmit()">Save</button>
 
 <script>
     function mysubmit(){

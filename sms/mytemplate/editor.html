@@ -69,6 +69,7 @@
         <input type="submit" onclick="show()" value="Save" style="margin: 8px; font-size: 20px;">
       </form>
       <button onclick="share(this)"> Share</button>
+      <input id="mylink" >
 
   </div>     
     
@@ -905,12 +906,10 @@
 }
 
 function share(button){
-  var parent = button.parentNode;
-      var herelink = document.createElement("input");
+      var herelink = document.getElementById("mylink");
       var mylink = window.location.href;
       var newlink = mylink.replace("editor","preview")
       herelink.setAttribute("value", newlink);
-      parent.appendChild(herelink);
 }
 
   </script>
