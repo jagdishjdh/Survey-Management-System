@@ -4,3 +4,4 @@ https://stackoverflow.com/questions/1764435/database-design-for-a-survey	// help
 https://www.vertabelo.com/blog/a-database-model-for-an-online-survey-part-1/#blog-post-comments
 
 https://colorlib.com                      // for login and registration template
+https://stackoverflow.com/questions/5823580/django-form-resubmitted-upon-refresh   //refresh dont submit
