@@ -104,7 +104,7 @@ def editor(request, sur_id=None):
                 row_del = request.POST['row_del'] # ##
 
                 # print("****************************")
-                print(sur_update)
+                # print(sur_update)
                 sur_upd_lst = re.split(" #~# ",sur_update)[:-1]
                 survey.title = sur_upd_lst[0]
                 survey.desc = sur_upd_lst[1]
@@ -119,32 +119,32 @@ def editor(request, sur_id=None):
                 survey.save()
                 # print(survey.endDate)
 
-                print("******qdellllllllllll**********************")
-                print(ques_del)
+                # print("******qdellllllllllll**********************")
+                # print(ques_del)
                 if ques_del != "":
                     q_id_del = [int(x) for x in re.split(" ## ",ques_del)[:-1]]
                     ques_lst_del = Question.objects.filter(id__in=q_id_del)
                     for q in ques_lst_del:
                         q.delete()
 
-                print("**********secdellllllllllllllll******************")
-                print(sec_del)
+                # print("**********secdellllllllllllllll******************")
+                # print(sec_del)
                 if sec_del != "":
                     sec_id_del = [int(x) for x in re.split(" ## ",sec_del)[:-1]]
                     sec_lst_del = Section.objects.filter(id__in=sec_id_del)
                     for se in sec_lst_del:
                         se.delete()
 
-                print("**********optdellllllll******************")
-                print(opt_del)
+                # print("**********optdellllllll******************")
+                # print(opt_del)
                 if opt_del != "":
                     opt_id_del = [int(x) for x in re.split(" ## ",opt_del)[:-1]]
                     opt_lst_del = Option.objects.filter(id__in=opt_id_del)
                     for op in opt_lst_del:
                         op.delete()
 
-                print("*******rowdelllllllllllll*********************")
-                print(row_del)
+                # print("*******rowdelllllllllllll*********************")
+                # print(row_del)
                 if row_del != "":
                     row_id_del = [int(x) for x in re.split(" ## ",row_del)[:-1]]
                     row_lst_del = Row.objects.filter(id__in=row_id_del)
@@ -160,8 +160,8 @@ def editor(request, sur_id=None):
                 # print(sec_upd_lst)
 
                 for s in sec_upd_lst:
-                    print("secsecsecsecsecccccccccccccccccc")
-                    print(sec_upd_lst)
+                    # print("secsecsecsecsecccccccccccccccccc")
+                    # print(sec_upd_lst)
                     if s[0] == '-1':
                         new_sec = Section(survey=survey,title=s[2],desc=s[3],section_no=int(s[1]))
                         new_sec.save()
@@ -173,8 +173,8 @@ def editor(request, sur_id=None):
                         sec.save()
 
 
-                print("********qqqqqqq********************")
-                print(ques_update)
+                # print("********qqqqqqq********************")
+                # print(ques_update)
                 # id, sec_no, qtype, req(true/false), order, other(0/1), title, desc, constraint,
                 #  [columns], [rows]
                 ques_upd_lst = re.split(" #~# ",ques_update)[:-1]
@@ -188,7 +188,7 @@ def editor(request, sur_id=None):
                     for k in range(len(ques_upd_lst[i][-1])):
                         ques_upd_lst[i][-1][k] = re.split(" #&# ",ques_upd_lst[i][-1][k])
 
-                print(ques_upd_lst)
+                # print(ques_upd_lst)
                 for q in ques_upd_lst:
                     sec = Section.objects.filter(survey=survey,section_no=q[1])[0]
                     req = False
@@ -218,7 +218,7 @@ def editor(request, sur_id=None):
                         if opt[0] == '-1':
                             op = Option(question=ques,value=opt[1])
                             op.save()
-                            print(opt,'aaaaaaaaaa')
+                            # print(opt,'aaaaaaaaaa')
                         else:
                             op = Option.objects.filter(id=int(opt[0]))[0]
                             op.value = opt[1]
@@ -228,17 +228,17 @@ def editor(request, sur_id=None):
                         if row[0] == '-1':
                             op = Row(question=ques,value=row[1])
                             op.save()
-                            print(row,'aaaaaaaaaa')
+                            # print(row,'aaaaaaaaaa')
                         else:
                             op = Row.objects.filter(id=int(row[0]))[0]
                             op.value = row[1]
                             op.save()
 
-                print("****************************")
+                # print("****************************")
 
                 return redirect('/user/editor/'+str(survey.id))
 
-            sec_lst = Section.objects.filter(survey=survey).order_by('section_no')
+            sec_lst = Section.objects.filter(survey=survey).order_by('section_no').order_by('id')
             
             # creating form object to be sent to editor page
             dic = {}
@@ -294,87 +294,108 @@ def response(request, sur_id=None):
             ngr = t11[:-3] + ' ## ' + t22[:-3]
 
             resps = Response.objects.filter(survey=sur[0]).exclude(question__qtype__in=[7,8]).order_by('response_num','question__order')
-            responses78 = Response.objects.filter(survey=sur[0],question__qtype__in=[7,8]).order_by('response_num','row')
-            resp78title = Response.objects.filter(survey=sur[0],question__qtype__in=[7,8]).distinct('question__order','row').order_by('question__order','row')
-            
+            print(resps)
+            # responses78 = Response.objects.filter(survey=sur[0],question__qtype__in=[7,8]).order_by('response_num','row')
+            # print(responses78)
+            # resp78title = Response.objects.filter(survey=sur[0],question__qtype__in=[7,8]).distinct('question__order','row').order_by('question__order','row')
+            # print(resp78title)
+
             # anonymous = sur[0].anonymous
-
-            temp_resp_num = resps[0].response_num
-            temp_response = ''
-            for resp in resps:
-                if resp.response_num != temp_resp_num:
-                    ngr = ngr + ' ## ' + temp_response[:-3]
-                    temp_response = ''
-                    temp_resp_num = resp.response_num
-
-                # short & long answer type
-                if resp.question.qtype in [0,1]:
-                    temp_response = temp_response + resp.other + ' # '
-                    # options type
-                elif resp.question.qtype in [2,3,4]:
-                    if resp.options == "":
-                        temp_response = temp_response + resp.other + ' # '
-                    else:
-                        op_ids = [int(x) for x in re.split(" @ ",resp.options)[:-1]]
-                        t = ''
-                        for op_id in op_ids:
-                            t = t + Option.objects.filter(id=op_id).value + ' @ '
-                        t = t[:-3]
-                        temp_response = temp_response + t + ' # '
-                    # file upload type
-                elif resp.question.qtype == 5:
-                    temp_response = temp_response + resp.file.url + ' # '
-                    # linear scale type
-                elif resp.question.qtype == 6:
-                    temp_response = temp_response + resp.other + ' # '
-                    # grid type
-                elif resp.question.qtype in [7,8]:
-                    pass
-                    # date type
-                elif resp.question.qtype == 9:
-                    temp_response = temp_response + str(resp.date) + ' # '
-                    # time type
-                elif resp.question.qtype == 10:
-                    temp_response = temp_response + str(resp.time) + ' # '
-                else:
-                    pass
-            
-            ngr = ngr + ' ## ' + temp_response[:-3]
-
             try:
-                gr_temp = ''
-                temp_num = resp78title[0].question.order
-                for respitem in resp78title:
-                    if respitem.question.order != temp_num:
-                        # add all responses to gr_temp
-                        gr_temp = gr_temp[:-3]
-
-                        cur_q_res = responses78.filter(question__order=temp_num)
-                        temp_resp_num = cur_q_res[0].response_num
+                temp_resp_num = resps[0].response_num
+                temp_response = ''
+                print('aaaaaaa1')
+                for resp in resps:
+                    print(resp.question.qtype)
+                    if resp.response_num != temp_resp_num:
+                        print('aaaaaaa2')
+                        ngr = ngr + ' ## ' + temp_response[:-3]
                         temp_response = ''
-                        for resp in cur_q_res:
-                            if resp.response_num != temp_resp_num:
-                                gr_temp = gr_temp + ' ## ' + temp_response[:-3]
-                                temp_response = []
-                                temp_resp_num = resp.response_num
+                        temp_resp_num = resp.response_num
 
-                            op_ids = [int(x) for x in re.split("@",resp.options)]
+                    # short & long answer type
+                    if resp.question.qtype in [0,1]:
+                        temp_response = temp_response + resp.other + ' # '
+                        print('bbbbb01')
+                        # options type
+                    elif resp.question.qtype in [2,3,4]:
+                        print('bbbbb234')
+                        if resp.options == "":
+                            temp_response = temp_response + resp.other + ' # '
+                        else:
+                            op_ids = [int(x) for x in re.split(" @ ",resp.options)[:-1]]
                             t = ''
                             for op_id in op_ids:
-                                t = t + Option.objects.filter(id=op_id).value + '@'
-                            t = t[:-1]
+                                t = t + Option.objects.filter(id=op_id)[0].value + ' @ '
+                            t = t[:-3]
                             temp_response = temp_response + t + ' # '
-                        
-                        gr_temp = gr_temp + ' ## ' + temp_response[:-3]
-                        gr.append(gr_temp)
-                        gr_temp = ''
-                        temp_num = respitem.question.order
-
-                    
-                    gr_temp = gr_temp + respitem.question.title+'['+respitem.row.value+']' + ' # '
+                        # file upload type
+                    elif resp.question.qtype == 5:
+                        print('bbbbb5')
+                        # temp_response = temp_response + resp.file + ' # '
+                        pass
+                        # linear scale type
+                    elif resp.question.qtype == 6:
+                        print('bbbbb6')
+                        temp_response = temp_response + str(resp.other) + ' # '
+                        # grid type
+                    elif resp.question.qtype in [7,8]:
+                        print('bbbbb78')
+                        pass
+                        # date type
+                    elif resp.question.qtype == 9:
+                        print('bbbbb9')
+                        temp_response = temp_response + str(resp.date) + ' # '
+                        # time type
+                    elif resp.question.qtype == 10:
+                        print('bbbbb10')
+                        temp_response = temp_response + str(resp.time) + ' # '
+                    else:
+                        pass
+                    print('aaaaaaa3')
+                
+                print('aaaaaaa4')
+                ngr = ngr + ' ## ' + temp_response[:-3]
+                print('aaaaaaa')
 
             except:
-                pass
+                print('exception aya')
+
+            # try:
+            #     gr_temp = ''
+            #     temp_num = resp78title[0].question.order
+            #     for respitem in resp78title:
+            #         if respitem.question.order != temp_num:
+            #             # add all responses to gr_temp
+            #             gr_temp = gr_temp[:-3]
+
+            #             cur_q_res = responses78.filter(question__order=temp_num)
+            #             temp_resp_num = cur_q_res[0].response_num
+            #             temp_response = ''
+            #             for resp in cur_q_res:
+            #                 if resp.response_num != temp_resp_num:
+            #                     gr_temp = gr_temp + ' ## ' + temp_response[:-3]
+            #                     temp_response = []
+            #                     temp_resp_num = resp.response_num
+
+            #                 op_ids = [int(x) for x in re.split("@",resp.options)]
+            #                 t = ''
+            #                 for op_id in op_ids:
+            #                     t = t + Option.objects.filter(id=op_id).value + '@'
+            #                 t = t[:-1]
+            #                 temp_response = temp_response + t + ' # '
+                        
+            #             gr_temp = gr_temp + ' ## ' + temp_response[:-3]
+            #             gr.append(gr_temp)
+            #             gr_temp = ''
+            #             temp_num = respitem.question.order
+
+                    
+            #         gr_temp = gr_temp + respitem.question.title+'['+respitem.row.value+']' + ' # '
+
+            # except:
+            #     print('exception aya22')
+                
             
             print(ngr)
             print(gr)
@@ -456,7 +477,7 @@ def preview(request, sur_id=None):
                 return redirect('/user/submitted/')
 
 
-            sec_lst = Section.objects.filter(survey=survey)
+            sec_lst = Section.objects.filter(survey=survey).order_by('id')
             
             # creating form object to be sent to editor page
             dic = {}
