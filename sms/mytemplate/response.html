@@ -11,17 +11,17 @@
     <a href="/user/editor/{{sur_id}}">editor</a> <br>
     <a href="/user/">dashboard</a>
     <div id="stats"></div>
-    <div id="chartContainer" style="width: 100%;"></div>
+    <div id="chartContainer" style="height: 300px; width: 100%;"></div>
 </body>
 <script type="text/javascript">
 
   var data = '{{non_grid_responses}}';
   var gr_data = "{{grid_responses}}";
-  var ll = data.split(" ## ");
+  var ll = data.split("##");
   var rl = []
-  for (var i=0; i<ll.length; i++)
+  for (var i =0;i<ll.length;i++)
   {
-    rl.push(ll[i].split(" # "));
+    rl.push(ll[i].split("#"));
   }
   
   var chr_types = rl[0].map(type_of_chart); 
@@ -29,10 +29,9 @@
   var chr_names = rl[1];
   var datum = rl.slice(2);
   //window.alert(datum);
-  
+  var titles = []
   var xypts = []
   var xytypes = []
-  var titles = []
   for(var i = 0; i<chr_types.length; i++)
   {
     if(chr_types[i] == "line")
@@ -42,11 +41,11 @@
       var dtpts = [];
       for(var j = 0; j<pp[0].length; j++)
       {
-        dtpts.push({x:pp[0][j], y:pp[1][j]});
+        dtpts.push({y:pp[1][j], indexLabel: pp[0][j]});
       }
       xypts.push(dtpts);
       xytypes.push("line");
-      titles.push(chr_names[i])
+      titles.push(chr_names[i]);
     }
 
     else if(chr_types[i] == "piechart")
@@ -60,6 +59,7 @@
       }
       xypts.push(dtpts);
       xytypes.push("pie");
+      titles.push(chr_names[i]);
     }
     else if(chr_types[i] == "column")
     {
@@ -68,41 +68,15 @@
       var dtpts = [];
       for(var j = 0; j<pp[0].length; j++)
       {
-        dtpts.push({x:pp[0][j], y:pp[1][j]});
+        dtpts.push({y:pp[1][j], indexLabel: pp[0][j]});
       }
       xypts.push(dtpts);
-      xytypes.push("column")
+      xytypes.push("column");
+      titles.push(chr_names[i]);
     }
   }
   //window.alert(xypts[1]);
-  window.onload = function (){
-    var charts = [];
-    for(var i = 0;i<xytypes.length;i++)
-    {
-      var chart = new CanvasJS.Chart("chartContainer"+i,
-      {
-        title:{
-        text: titles[i]   
-        },
-        data:[
-        {        
-          type: xytypes[i],
-          dataPoints: xypts[i]
-        }
-        ]
-      });
-      charts.push(chart);
-
-      //chart.render();
-    }
-    window.alert(charts.length);
-    for(var i = 0;i<charts.length;i++)
-    {
-      charts[i].render();
-    }
-  }
-    
-  /*window.onload = function () {
+  window.onload = function () {
     var chart = new CanvasJS.Chart("chartContainer",
     {
       title:{
@@ -110,14 +84,14 @@
       },
       data: [
       {        
-        type: "line",
-        dataPoints: xypts[0]
+        type: xytypes[3],
+        dataPoints: xypts[3]
       }
       ]
     });
 
     chart.render();
-  }*/
+  }
   function type_of_chart(col_name)
   {
     if(col_name=="0")
@@ -133,12 +107,12 @@
     else if(col_name=="5")
     return "string";
     else if(col_name=="6")
-    return "line";
+    return "column";
     else if(col_name=="7")
     return "piechart";
     else if(col_name=="8")
     return "piechart";
-    else return "line";
+    else return "string";
   }
 
 
@@ -166,17 +140,12 @@
 
   function data_multi(d,index)
   {
-    //var y = d.map(function(v){return v[index]});
-    y = []
-    for(var k = 0;k<d.length;k++)
-    {
-      y.push(d[k][index]);
-    } 
+    var y = d.map(function(v){return v[index]}); 
     var normal = y.map(nrl);
     function nrl(dat)
     {
       var a = [];
-      var b = dat.split(" @  ");
+      var b = dat.split("@");
       return b;
     }
     normal = normal.flat();
