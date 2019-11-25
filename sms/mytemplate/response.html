@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Response</title>
+</head>
+<body>
+    <h1>Response</h1>
+    <a href="/user/editor/{{sur_id}}">editor</a> <br>
+    <a href="/user/">dashboard</a>
+    <div id="stats"></div>
+    <div id="chartContainer" style="width: 100%;"></div>
+</body>
+<script type="text/javascript">
+
+  var data = '{{non_grid_responses}}';
+  var gr_data = "{{grid_responses}}";
+  var ll = data.split(" ## ");
+  var rl = []
+  for (var i=0; i<ll.length; i++)
+  {
+    rl.push(ll[i].split(" # "));
+  }
+  
+  var chr_types = rl[0].map(type_of_chart); 
+  //var chr_types = ["line", "piechart", "line","column"];
+  var chr_names = rl[1];
+  var datum = rl.slice(2);
+  //window.alert(datum);
+  
+  var xypts = []
+  var xytypes = []
+  var titles = []
+  for(var i = 0; i<chr_types.length; i++)
+  {
+    if(chr_types[i] == "line")
+    {
+      var pp = data_single(datum,i);
+      //window.alert(pp);
+      var dtpts = [];
+      for(var j = 0; j<pp[0].length; j++)
+      {
+        dtpts.push({x:pp[0][j], y:pp[1][j]});
+      }
+      xypts.push(dtpts);
+      xytypes.push("line");
+      titles.push(chr_names[i])
+    }
+
+    else if(chr_types[i] == "piechart")
+    {
+      var pp = data_single(datum,i)
+      //window.alert(pp);
+      var dtpts = [];
+      for(var j = 0; j<pp[0].length; j++)
+      {
+        dtpts.push({y:pp[1][j], indexLabel: pp[0][j]});
+      }
+      xypts.push(dtpts);
+      xytypes.push("pie");
+    }
+    else if(chr_types[i] == "column")
+    {
+      var pp = data_single(datum,i);
+      //window.alert(pp[0]);
+      var dtpts = [];
+      for(var j = 0; j<pp[0].length; j++)
+      {
+        dtpts.push({x:pp[0][j], y:pp[1][j]});
+      }
+      xypts.push(dtpts);
+      xytypes.push("column")
+    }
+  }
+  //window.alert(xypts[1]);
+  window.onload = function (){
+    var charts = [];
+    for(var i = 0;i<xytypes.length;i++)
+    {
+      var chart = new CanvasJS.Chart("chartContainer"+i,
+      {
+        title:{
+        text: titles[i]   
+        },
+        data:[
+        {        
+          type: xytypes[i],
+          dataPoints: xypts[i]
+        }
+        ]
+      });
+      charts.push(chart);
+
+      //chart.render();
+    }
+    window.alert(charts.length);
+    for(var i = 0;i<charts.length;i++)
+    {
+      charts[i].render();
+    }
+  }
+    
+  /*window.onload = function () {
+    var chart = new CanvasJS.Chart("chartContainer",
+    {
+      title:{
+       text: "Index Labels on dataPoints"   
+      },
+      data: [
+      {        
+        type: "line",
+        dataPoints: xypts[0]
+      }
+      ]
+    });
+
+    chart.render();
+  }*/
+  function type_of_chart(col_name)
+  {
+    if(col_name=="0")
+    return "string";
+    if(col_name=="1")
+    return "string";
+    else if(col_name=="3")
+    return "line";
+    else if(col_name=="2")
+    return "piechart";
+    else if(col_name=="4")
+    return "column";
+    else if(col_name=="5")
+    return "string";
+    else if(col_name=="6")
+    return "line";
+    else if(col_name=="7")
+    return "piechart";
+    else if(col_name=="8")
+    return "piechart";
+    else return "line";
+  }
+
+
+  function data_single(d,index)
+  {
+    var a = [], b = [], prev;
+    y = []
+    for(var k = 0;k<d.length;k++)
+    {
+      y.push(d[k][index]);
+    }//data in form from 2nd element
+    y.sort();
+    //window.alert(y);
+    for ( var i = 0; i < y.length; i++ ) {
+      if ( y[i] !== prev ) {
+          a.push(y[i]);
+          b.push(1);
+      } else {
+          b[b.length-1]++;
+      }
+      prev = y[i];
+    }
+    return [a,b];
+  }
+
+  function data_multi(d,index)
+  {
+    //var y = d.map(function(v){return v[index]});
+    y = []
+    for(var k = 0;k<d.length;k++)
+    {
+      y.push(d[k][index]);
+    } 
+    var normal = y.map(nrl);
+    function nrl(dat)
+    {
+      var a = [];
+      var b = dat.split(" @  ");
+      return b;
+    }
+    normal = normal.flat();
+    var a = [], b = [], prev;
+    y.sort();
+    for ( var i = 0; i < y.length; i++ ) {
+        if ( y[i] !== prev ) {
+            a.push(y[i]);
+            b.push(1);
+        } else {
+            b[b.length-1]++;
+        }
+        prev = y[i];
+    }
+    return [a,b];
+  }
+  
+  </script>
+   <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</html>

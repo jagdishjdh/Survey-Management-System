@@ -78,9 +78,6 @@
             </nav>
 		</header>
 		
-<!-- 		<div style="margin-top: 60px;">
-		<a href="create/">Create a survey</a>
- -->		
 		<div class="row main" >
 			{% for survey in surveys %}
 
@@ -92,11 +89,11 @@
 							<div class="title">
 							 <h1>{{survey.title}}</h1>
 							</div>
-							 <div> created {{survey.createDate|date:'d M Y'}}</div>
+							 <div> created {{survey.createDate|date:'d M Y'}} <a style="float: right;" href="response/{{survey.id}}">Response</a></div>
 						</div>
 						<div style="color: blue;text-align: center;">
 							<span onclick="window.location.href='preview/{{survey.id}}'" style="float: left;">Preview</span> 
-							<span onclick="popupWindow('google.com', 'test', window, 500, 500);" style="display: inline-block;">Collaborators</span> 
+							<span onclick="window.location.href='collab/{{survey.id}}'" style="display: inline-block;">Collaborators</span> 
 							<span onclick="deletion( '{{survey.title}}','{{survey.id}}')" style="float: right;">Delete</span>
 						</div>
 
