@@ -4,9 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <title>Collaborators</title>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 80%;
+          }
+          
+          td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+          }
+          
+          tr:nth-child(odd) {
+            background-color: #dddddd;
+          }
+    </style>
 </head>
 <body>
+    <a href="/user/" style="font-size: 20px;">Back</a>
     <h1>Collaborators</h1>
+    <table id="collabTable">
+        <tr>
+            <th>User Name</th>
+            <th>Owner</th>
+            <th>Can add collaborators</th>
+        </tr>
+        {% for collab in users %}
+            <tr>
+                <td>{{collab.user.username}}</td>
+                <td>{{collab.owner}}</td>
+                <td>{{collab.add_collab}}</td>
+            </tr>
+        {% endfor %}
+
+    </table>
+    <br><br>
+    {% if cur_user.add_collab %}
+        <form action="/user/collab/{{sur_id}}" method="POST">
+            {% csrf_token %}
+            <div class="form-group" style="display: inline;">
+              <label for="sel1">Select user to add as Collaborator</label>
+              <select class="" id="sel1" name="user">
+                {% for uname in all_username %}
+                    {% for key,name in uname.items %}
+                        <option>{{name}}</option>
+                    {% endfor %}
+                {% endfor %}
+              </select>
+            </div>
+            <!-- <label for="sel1">owner</label> -->
+            <!-- <input type="checkbox" name="owner1" > -->
+            <label for="sel1">can add collaborator</label>
+            <input type="checkbox" name="addcollab">
+            <input type="submit" value="Add/Update">
+          </form>
+          
+    {% endif %}
+        {% for message in messages %}
+            <span style="color:rgb(121, 4, 4);">
+                {{message}}
+            </span>
+        {% endfor %}
+
 </body>
 </html>

@@ -4,7 +4,7 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from .models import *
-import re 
+import re, csv
 from datetime import datetime
 
 class form:
@@ -12,9 +12,13 @@ class form:
          self.survey = survey
          self.dictionary = dic
 
-typearr = ["Short Ans", "Paragraph", "Multiple Choice",
-        "Checkboxes", "Drop-down", "File Upload", "Linear scale",
-        "Multiple choice grid", "Tick box grid", "Date", "Time"]
+typearr = ["Short Ans", "Paragraph",                  # 0 1
+        "Multiple Choice","Checkboxes", "Drop-down",  # 2 3 4
+        "File Upload",                                # 5 
+        "Linear scale",                               # 6
+        "Multiple choice grid", "Tick box grid",      # 7 8
+        "Date",                                       # 9
+        "Time"]                                       # 10
 
 # Create your views here.
 def dashboard(request):
@@ -248,13 +252,118 @@ def response(request, sur_id=None):
             # means this survey does not belongs to the logged in user
             return redirect('/user')
         else:
-            resp = Response.objects.filter(survey=sur[0])
-            return render(request, 'response.html', {'responses':resp, 'sur_id':sur[0].id})
+            # qtype1#qtype2 ...##
+            # qtitle1   qtitle2 ...
+            # responses ...op1@op2
+            ngr = ""
+            gr = []
+            # assuming all questions have different number in order
+            questions = Question.objects.filter(section__survey=sur[0]).order_by('order')
+            t11 = ''
+            t22 = ''
+            for q in questions:
+                if q.qtype == 7 or q.qtype == 8:
+                    pass
+                else:
+                    # ngr[0].append(q.qtype)
+                    # ngr[1].append(q.title)
+                    t11 = t11 + str(q.qtype)+' # '
+                    t22 = t22 + q.title+' # '
+            ngr = t11[:-3] + ' ## ' + t22[:-3]
+
+            resps = Response.objects.filter(survey=sur[0]).exclude(question__qtype__in=[7,8]).order_by('response_num','question__order')
+            responses78 = Response.objects.filter(survey=sur[0],question__qtype__in=[7,8]).order_by('response_num','row')
+            resp78title = Response.objects.filter(survey=sur[0],question__qtype__in=[7,8]).distinct('question__order','row').order_by('question__order','row')
+            
+            # anonymous = sur[0].anonymous
+
+            temp_resp_num = resps[0].response_num
+            temp_response = ''
+            for resp in resps:
+                if resp.response_num != temp_resp_num:
+                    ngr = ngr + ' ## ' + temp_response[:-3]
+                    temp_response = ''
+                    temp_resp_num = resp.response_num
+
+                # short & long answer type
+                if resp.question.qtype in [0,1]:
+                    temp_response = temp_response + resp.other + ' # '
+                    # options type
+                elif resp.question.qtype in [2,3,4]:
+                    if resp.options == "":
+                        temp_response = temp_response + resp.other + ' # '
+                    else:
+                        op_ids = [int(x) for x in re.split(" @ ",resp.options)[:-1]]
+                        t = ''
+                        for op_id in op_ids:
+                            t = t + Option.objects.filter(id=op_id).value + ' @ '
+                        t = t[:-3]
+                        temp_response = temp_response + t + ' # '
+                    # file upload type
+                elif resp.question.qtype == 5:
+                    temp_response = temp_response + resp.file.url + ' # '
+                    # linear scale type
+                elif resp.question.qtype == 6:
+                    temp_response = temp_response + resp.other + ' # '
+                    # grid type
+                elif resp.question.qtype in [7,8]:
+                    pass
+                    # date type
+                elif resp.question.qtype == 9:
+                    temp_response = temp_response + str(resp.date) + ' # '
+                    # time type
+                elif resp.question.qtype == 10:
+                    temp_response = temp_response + str(resp.time) + ' # '
+                else:
+                    pass
+            
+            ngr = ngr + ' ## ' + temp_response[:-3]
+
+            try:
+                gr_temp = ''
+                temp_num = resp78title[0].question.order
+                for respitem in resp78title:
+                    if respitem.question.order != temp_num:
+                        # add all responses to gr_temp
+                        gr_temp = gr_temp[:-3]
+
+                        cur_q_res = responses78.filter(question__order=temp_num)
+                        temp_resp_num = cur_q_res[0].response_num
+                        temp_response = ''
+                        for resp in cur_q_res:
+                            if resp.response_num != temp_resp_num:
+                                gr_temp = gr_temp + ' ## ' + temp_response[:-3]
+                                temp_response = []
+                                temp_resp_num = resp.response_num
+
+                            op_ids = [int(x) for x in re.split("@",resp.options)]
+                            t = ''
+                            for op_id in op_ids:
+                                t = t + Option.objects.filter(id=op_id).value + '@'
+                            t = t[:-1]
+                            temp_response = temp_response + t + ' # '
+                        
+                        gr_temp = gr_temp + ' ## ' + temp_response[:-3]
+                        gr.append(gr_temp)
+                        gr_temp = ''
+                        temp_num = respitem.question.order
+
+                    
+                    gr_temp = gr_temp + respitem.question.title+'['+respitem.row.value+']' + ' # '
+
+            except:
+                pass
+            
+            print(ngr)
+            print(gr)
+
+            return render(request, 'response.html', {'non_grid_responses':ngr,
+                    'grid_responses':gr , 'sur_id':sur[0].id})
 
     else:
+            
         messages.info(request, 'Please Login First')
         return render(request, 'login.html')
-
 
 def delete_survey(request, sur_id=None):
     if sur_id == None:
@@ -267,20 +376,63 @@ def delete_survey(request, sur_id=None):
         if sur.count() == 0:
             # means this survey does not belongs to the logged in user
             return redirect('/user')
-        else:
+
+        isowner = User_survey.objects.filter(user=user,survey=sur[0])[0].owner
+        if isowner:
             # messages.warning(request,"Are you sure to delete the selected Survey?")
             sur.delete()
             return redirect("/user")
+        else:
+            return redirect('/user')
 
     else:
         messages.info(request, 'Please Login First')
         return render(request, 'login.html')
+
+response_num = 1
 
 def preview(request, sur_id=None):
     # if this is post request then data is to be saved first
     if sur_id is not None:
         try:
             survey = Survey.objects.get(id=sur_id)
+
+            if request.method == 'POST':
+                response_num = response_num+1
+
+                answers = request.POST['text_answer']
+                answers = re.split(' ## ',answers)[:-1]
+                for i in range(range(answers)):
+                    answers[i] = re.split(' # ', answers[i])
+                
+                for ans in  answers:
+                    new_res = Response(response_num=response_num,
+                            survey=survey,
+                            question=Question.objects.get(id=int(ans[0])),
+                            options=ans[2])
+                    typ = int(ans[1])
+                    if typ == 9:
+                        try:
+                            new_res.date = datetime.strptime(ans[3], "%Y-%m-%d")
+                        except:
+                            pass
+                    elif typ == 10:
+                        try:
+                            new_res.time = datetime.strptime(ans[3], "%H:%M")
+                        except:
+                            pass
+                    elif typ == 5:
+                        pass
+                    elif typ == 6:
+                        pass
+                    else:
+                        new_res.other = ans[3]
+                    
+                    new_res.save()
+
+                return redirect('/user/submitted/')
+
+
             sec_lst = Section.objects.filter(survey=survey)
             
             # creating form object to be sent to editor page
@@ -305,8 +457,54 @@ def preview(request, sur_id=None):
     else:
         return redirect('/user')
 
-
 def collab(request,sur_id=None):
+    if sur_id == None:
+        return redirect('/user')
+    if request.user.is_authenticated:
+        user = request.user
+        # print(sur_id,'****************')
+        sur = Survey.objects.filter(user_survey__user=user, id=sur_id)
+        if sur.count() == 0:
+            # means this survey does not belongs to the logged in user
+            return redirect('/user')
+        
+        else:
+            users_sur = User_survey.objects.filter(survey=sur[0])
+            if request.method == 'POST':
+                new_coll = request.POST['user']
+                try:
+                    addcollab = request.POST['addcollab']
+                    addcollab = True
+                except:
+                    addcollab = False
+                # try:
+                #     owner = request.POST['owner1']
+                #     owner = True
+                # except:
+                owner = False
+                    
+                # print(new_coll,addcollab,owner)
+                if users_sur.filter(user__username=new_coll).count() == 0:
+                    new = User_survey(user=User.objects.get(username=new_coll),survey=sur[0],owner=owner,add_collab=addcollab)
+                    new.save()
+                else:
+                    temp = users_sur.filter(user__username=new_coll)[0]
+                    temp.owner = owner
+                    temp.add_collab = addcollab
+                    temp.save()
+
+            all_users = User.objects.all().exclude(username=user.username).values('username')
+            # print(type(all_users[0]))
+            users_sur = User_survey.objects.filter(survey=sur[0])
+
+            return render(request, 'collab.html',
+                {'cur_user':users_sur.filter(user=user)[0],'users':users_sur,'all_username':list(all_users),'sur_id':sur_id})
+
+    else:
+        messages.info(request, 'Please Login First')
+        return render(request, 'login.html')
+
+def get_csv(request,sur_id=None):
     if sur_id == None:
         return redirect('/user')
     if request.user.is_authenticated:
@@ -317,10 +515,13 @@ def collab(request,sur_id=None):
         if sur.count() == 0:
             # means this survey does not belongs to the logged in user
             return redirect('/user')
-        else:
-            # messages.warning(request,"Are you sure to delete the selected Survey?")
-            return render(request, 'collab.html')
+
+        # now create the csv file
 
     else:
         messages.info(request, 'Please Login First')
         return render(request, 'login.html')
+
+
+def submitted(request):
+    return render(request,'submited.html')
