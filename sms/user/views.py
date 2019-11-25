@@ -249,7 +249,7 @@ def response(request, sur_id=None):
             return redirect('/user')
         else:
             resp = Response.objects.filter(survey=sur[0])
-            ngr = [["daskjfh", "asldhfl" ,"asdhfkb" , "sadjiflh"], [1,2,3,4]]
+            ngr = "10#10#10#10##daskjfh#asldhfl#asdb#sah##adsf#asfd#fe#fsg##af#af#fe#fsg"
             gr = [[]]
             return render(request, 'response.html', {'non_grid_responses':ngr, 'grid_responses':gr,  'sur_id':sur[0].id})
 
