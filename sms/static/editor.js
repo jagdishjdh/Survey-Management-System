@@ -68,6 +68,13 @@
     var parent = button.parentNode;
     var clone = parent.cloneNode(true);
 
+    var secid = clone.querySelector('.sec_id');
+    if(clone.contains(secid)){
+       secid.remove();
+       var secnum = clone.querySelector('.sec_num');
+       secnum.remove();
+    }  else{}
+
     var node = document.createElement("LI");
     node.appendChild(clone);
     document.getElementById("seclist").appendChild(node);
@@ -238,9 +245,9 @@
   
           optbtn.appendChild(addtxt);
           otherbtn.appendChild(othertxt);
-          extraoptn .appendChild(optbtn);
-          extraoptn .appendChild(ortxt);
-          extraoptn .appendChild(otherbtn);
+          extraoptn.appendChild(optbtn);
+          extraoptn.appendChild(ortxt);
+          extraoptn.appendChild(otherbtn);
   
           option1 .appendChild(optnval);
           optnlist.appendChild(option1);                    
@@ -458,73 +465,4 @@
       var grand_father = parent.parentNode;
       grand_father.removeChild(parent);
     }
-  function show(){
-  var myinput1 = document.getElementById("sec_del");
-  var myinput2 = document.getElementById("q_del");
-  var myinput3 = document.getElementById("sur_update");
-  var myinput4 = document.getElementById("sec_update");
-  var myinput5 = document.getElementById("q_update");
-  var myinput6 = document.getElementById("opt_del");
-
-  var sp1 = " #~# ", sp2=" ## ",sp3=" #@# ";
-  var text1 = "";                          //sec_deleted .....ids  sp2
-  var text2 = "";                          //Q_deleted ..... ids   sp2
-  var text3 = "";                          //survey_update
-  var text4 = "";                          //sec_update
-  var text5 = "";                          //Q_update
-  var text6 = "";                         //opt_deleted
-
-  var header = document.getElementsByClassName("form_ttl");
-  for(var i = 0; i < 3; i++) {    
-  text3 += header[i].value + sp1;
-  }
-  text3 += header[3].checked + sp1;
-
-  var allsec_div = document.getElementsByClassName("sec_div");
-
-  for(var s = 0; s < allsec_div.length; s++){
-    curr_sec = allsec_div[s];
-    var secnum = s+1;
-    var title = curr_sec.getElementsByClassName("sec_ttl")[0].value;
-    var desc = curr_sec.getElementsByClassName("sec_desc")[0].value;
-    text4 += "-1" + sp2+ secnum +sp2+ title + sp2 + desc + sp2+ ""+ sp1;
-
-  var Q_div =  curr_sec.querySelectorAll('.oneq');
-  var length5 = Q_div.length;
-  var mainQ , qtype, req,list1,list2,list11,list22,optnlength,other,optns, order;
-
-  for(var i = 0; i < length5; i++) {
-      parent = Q_div[i];
-      mainQ = parent.getElementsByClassName("mainQ")[0].value;
-      qtype = parent.getElementsByClassName("Qtype")[0].selectedIndex;
-      req = parent.getElementsByClassName("toggle")[0].checked;
-      if(qtype >=2 && qtype<=4){
-          list1 =  parent.getElementsByTagName("ul")[0];
-          list2 =  parent.getElementsByTagName("ul")[1];
-          list11 =  list1.getElementsByTagName("input");
-          list22 =  list2.getElementsByTagName("li");
-      if(list22.length >=2){other = 1;}
-      else{other = 0;}
-          optnlength = list11.length;
-          optns="";
-          for(var optnum=0; optnum<optnlength;optnum++){
-          optns+= "-1" + " #^# " + list11[optnum].value  + sp3;
-          }
-      } 
-      else{other = 0; optnlength = -1,optns="";}
-      order = i+1;
-    // sp2=##
-    //  text5 = id, secnum, qtype, req, order, other, title, desc,  constraint, options,rows
-      text5 += "-1" + sp2 + secnum + sp2 + qtype + sp2 + req  +sp2 + order +sp2 + other +  sp2 + mainQ +
-             sp2+ "" +sp2+ "" +sp2 + optns + sp2 + "" + sp1 ;
-      }
-    }
-  
-
-  myinput1.setAttribute("value", text1);
-  myinput2.setAttribute("value", text2);
-  myinput3.setAttribute("value", text3);
-  myinput4.setAttribute("value", text4);
-  myinput5.setAttribute("value", text5);
-  myinput6.setAttribute("value", text6);
-}
+ 

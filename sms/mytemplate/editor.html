@@ -18,15 +18,22 @@
       border: none; border-color: transparent; font-size: 15px; width:25%;
       background-color: transparent;border-bottom: 3px solid rgb(30, 122, 228); margin : 10px;
     }
+    .invis{
+      background-color: pink;
+    }
+   /* .sec_num, .sec_id{
+      display: none;
+    }*/
+
     </style>
 
 </head>
-<body data-spy="scroll" data-offset="125" onload="crtsec()">
+<body data-spy="scroll" data-offset="125" onload="alreaysec()">
  
   <div class="container-fluid" style="background-color:rgb(102, 204, 255); height: 70px; text-align: center;">
     <a href="/user/" style="float: left;">Dashboard</a>
     <h2 style="display: inline;">create your form</h2>
-    <a href="/user/preview/{{form.survey.id}}" style="float: right;">Preview</a>
+    <a href="/user/preview/{{form.survey.id}}" target="_blank" style="float: right;">Preview</a>
 
   </div>
 
@@ -36,8 +43,8 @@
     <span> accept response till :-</span>
     <input type="datetime-local" name="form_exdate" id="form_exdate1" class="form_ttl" 
                                       style="width: fit-content;" value="{{form.survey.endDate|date:'Y-m-d\TH:i'}}">
-    <span>Login required</span>
-    <input type="checkbox" name="form_loginreq" class="form_ttl" value="{{form.survey.anonymous}}" style="width: fit-content;">
+    <span>login not required</span>
+    <input type="checkbox" name="form_loginreq" class="form_ttl" checked="{{form.survey.anonymous}}" style="width: fit-content;">
   </div>
   <!-- buttons -->
   <div data-spy="affix" data-offset-top="125" class="container-fluid" 
@@ -57,6 +64,7 @@
         <input name="sec_update" id="sec_update" style="width: 100%;"> <br>
         <input name="q_update"  id="q_update" style="width: 100%;"> <br>
         <input name="opt_del"  id="opt_del" style="width: 100%;"> <br>
+        <input name="row_del"  id="row_del" style="width: 100%;"> <br>
         </div>
         <input type="submit" onclick="show()" value="Save" style="margin: 8px; font-size: 20px;">
       </form>
@@ -66,12 +74,849 @@
   <!-- all question -->
   <div class="container-fluid container" style="background-color:yellow; width: 100%;">
     <h3>Preview</h3>
-    <ol id="seclist"></ol>
+    <ol id="seclist">
+        {% for sec , qdict in form.dictionary.items %}
+        <li> <div class="sec_div">
+          <p class="sec_plate">Section</p>
+          <input type="text"   class="sec_num invis"  value="{{ sec.section_no }}" >
+          <input type="text"   class="sec_id invis"   value="{{ sec.id }}" > <br>
+          <input type="text"   class="sec_ttl"  value="{{ sec.title }}" >
+          <button onclick="Copy_sec(this)"> Copy</button>
+          <button onclick="Delete_sec(this)"> Remove</button>
+          <input type="text"   class="sec_desc" value="{{ sec.desc }}" >
+          <ol>
+            {% for q , optn in qdict.items %}
 
+            <li> <div class="oneq">
+                <input type="text"   class="q_id invis"   value="{{ q.id }}" >
+                <input type="text"   class="q_order invis"   value="{{ q.order }}" > 
+                <input type="text"   class="qtypeindex invis"   value="{{ q.qtype }}" ><br>
+
+
+
+              <select class="Qtype" onchange="modifyQ(this)">
+                {% for i,j in optlist %}
+                      {% if i == q.qtype %}
+                      <option selected>{{j}}</option>
+                      {% else %}
+                      <option>{{j}}</option>
+                      {% endif %}
+                {% endfor %}
+              </select>
+
+              <button onclick="DeleteQ(this)">Remove</button>
+              <button onclick="CopyQ(this)">Copy</button>
+              <span>Require</span>
+              {% if q.required  %}
+                <label class="switch"> 
+                  <input type="checkbox" class="toggle" checked>
+                  <span class="slider round"></span>
+                </label>
+                {% else %}
+                <label class="switch">
+                  <input type="checkbox" class="toggle">
+                  <span class="slider round"></span>
+                </label>
+
+                {% endif %}
+                <input type="text"   class="mainQ"   value="{{ q.title }}">
+                <!-- answerdiv -->
+
+
+
+                {% if q.qtype == 0 %}
+                  <div class="textans_div">
+                  <input type="text" class="textans" value=" short answer here" disabled="true" >
+                  </div>
+                {% elif q.qtype == 1 %}
+                  <div class="textans_div">
+                  <input type="text" class="textans" value=" long answer here" disabled="true" >
+                  </div>
+
+                {% elif q.qtype >= 2 and q.qtype <= 4 %}
+                    <div class="options_div">
+                    <ul>
+
+                      {% for opt in optn.0 %}
+                      <li>
+                          <input type="text"   class="option"   value="{{opt.value}}" >
+                          <input type="text"   class="optn_id invis"   value="{{opt.id}}" >
+
+                          <button onclick="remove_opt(this)">Remove Option</button>
+                      </li>
+                      {% endfor %}
+                    </ul>
+                    <ul>
+
+                  {% if q.other == 1 %}
+                      <li>
+                        <input type="text" value="Other ..." class="otheroptn" disabled="true">
+                        <button onclick="remove_opt(this)">Remove</button> 
+                      </li>
+                  {% else %}
+                  {% endif %}
+
+                      <li> <button onclick="addopt(this)"> Add new Option</button> 
+                           <span>OR</span> 
+                           <button onclick="addother(this)">Other</button> 
+                      </li>
+                    </ul>
+                   </div>
+                {% elif q.qtype == 5 %}
+                <div class="file_div">
+                  <input type="file" class="file_input" disabled="true">
+                  <p> user will upload a file here </p>
+                  
+                </div>
+                {% elif q.qtype == 9 %}
+                <div class="date_div">
+                  <input type="date" >
+                </div>
+
+                {% elif q.qtype == 10 %}
+                <div class="date_div">
+                  <input type="time" >
+                </div>
+
+                {% elif q.qtype >= 7 and q.qtype <= 8 %}
+                    <div class="RCoptions_div">
+                      <h3>Rows:-</h3>
+                    <ul>
+
+                      {% for row in optn.1 %}
+                      <li>
+                          <input type="text"   class="option"   value="{{row.value}}" >
+                          <input type="text"   class="row_id invis"   value="{{row.id}}" >
+
+                          <button onclick="remove_opt(this)">Remove Option</button> 
+                      </li>
+                      {% endfor %}
+                    </ul>
+                    <ul>
+                      <li> <button onclick="addopt(this)"> Add new Option</button></li>
+                    </ul>
+
+
+                      <h3>Columns:-</h3>
+                    <ul>
+
+                      {% for opt in optn.0 %}
+                      <li>
+                          <input type="text"   class="option"   value="{{opt.value}}" >
+                          <input type="text"   class="optn_id invis"   value="{{opt.id}}" >
+
+                          <button onclick="remove_opt(this)">Remove Option</button>
+                      </li>
+                      {% endfor %}
+                    </ul>
+                    <ul>
+                      <li> <button onclick="addopt(this)"> Add new Option</button></li>
+                    </ul>
+                   </div>
+
+                {% elif q.qtype == 6 %}
+                  <div class="scale_div">
+                    <select style="display: inline;">
+                      <option>0</option>
+                      <option>1</option>
+                    </select>
+                    <p style="display: inline;">to</p>
+                    <select style="display: inline;">
+                      <option>2</option>
+                      <option>3</option>
+                      <option>4</option>
+                      <option>5</option>
+                      <option>6</option>
+                      <option>7</option>
+                      <option>8</option>
+                      <option>9</option>
+                      <option>10</option>
+                    </select>
+                    <p style="display: inline;">start label:-</p>
+                    <input type="text" value="{{q.constraint}}" style="display: inline;">
+                    <p style="display: inline;">end label:-</p>
+                    <input type="text" name="" style="display: inline;">
+                </div>
+
+
+                {% else %}
+                  
+                {% endif %}
+
+
+<!--                 <input type="text"   class="q_id"   value="{{ q.other }}" >
+                <input type="text"   class="q_id"   value="{{ q.constraint }}" >
+                <input type="text"   class="q_id"   value="{{ q.required }}" >
+ -->
+             </div> </li>
+            {% endfor%}
+          </ol>
+        </div></li>
+        {% endfor%}
+     </ol>
+
+   
   </div>
   
   <!-- all functions are here -->
-  <script src="{% static 'editor.js' %}"></script>
+<!--   <script src="{% static 'editor.js' %}"></script>
+ -->  
+ <script>
+  var sec_delet ="";
+  var q_delet ="";
+  var opt_delet ="";
+  var row_delet ="";
+  function crtsec(){
+    var sec_div = document.createElement("div");
+    var new_line = document.createElement("hr");
+    var title = document.createElement("input");
+    var desc = document.createElement("input");
+    var nameplate = document.createElement("p");
+    var qlist = document.createElement("ol");
+    var copybtn = document.createElement("button");
+    var rmbtn = document.createElement("button");
+
+    var rmtext = document.createTextNode("remove");
+    var copytext = document.createTextNode("Copy");
+
+    sec_div.setAttribute("class","sec_div");
+    new_line.setAttribute("class","myhr");
+    title.setAttribute("class","sec_ttl");
+    desc.setAttribute("class","sec_desc");
+    nameplate.setAttribute("class","sec_plate");
+
+
+    title.setAttribute("value","section title");
+    desc.setAttribute("value","section description (optional)");
+    nameplate.innerHTML = "Section";
+
+    copybtn.setAttribute("class", "removebtn");
+    copybtn.setAttribute("onclick", "Copy_sec(this)");
+    rmbtn.setAttribute("class", "removebtn");
+    rmbtn.setAttribute("onclick", "Delete_sec(this)");
+
+    var secoptn = document.getElementById("selected_sec");
+    var optnum = secoptn.length + 1;
+    var option = document.createElement("option");
+    option.text = optnum;
+    secoptn.appendChild(option);
   
+
+    copybtn.appendChild(copytext);
+    rmbtn.appendChild(rmtext);
+
+    sec_div.appendChild(new_line);
+    sec_div.appendChild(nameplate);
+    sec_div.appendChild(title);
+    sec_div.appendChild(copybtn);
+    sec_div.appendChild(rmbtn);
+    sec_div.appendChild(desc);
+    sec_div.appendChild(qlist);
+
+    var node = document.createElement("LI");
+    node.appendChild(sec_div);
+    document.getElementById("seclist").appendChild(node);
+
+
+  }
+  function Delete_sec(button) {
+      var parent = button.parentNode;
+      var grand_father = parent.parentNode;
+      var gg_father = grand_father.parentNode;
+      gg_father.removeChild(grand_father);
+
+      var secid_del = grand_father.querySelector('.sec_id');
+      if(grand_father.contains(secid_del)){ 
+          var secid=secid_del.value;
+          sec_delet+=secid+" ## ";
+         }
+      else{}
+
+      var x = document.getElementById("selected_sec");      //remove one option from select sec
+
+      if (x.length > 0) {
+        x.remove(x.length-1);
+      }else{}     
+}
+
+  function Copy_sec(button) {
+    var parent = button.parentNode;
+    var clone = parent.cloneNode(true);
+
+    var invis = clone.querySelector('.invis');
+    if(clone.contains(invis)){
+      var invisall = clone.getElementsByClassName("invis");
+      for (var i = invisall.length - 1; i >= 0; i--) {
+        invisall[i].remove();
+      }
+    }  else{}
+
+    var node = document.createElement("LI");
+    node.appendChild(clone);
+    document.getElementById("seclist").appendChild(node);
+
+    var secoptn = document.getElementById("selected_sec");    // add a option to selcte_sec
+    var optnum = secoptn.length + 1;
+    var option = document.createElement("option");
+    option.text = optnum;
+    secoptn.appendChild(option);
+  }
+
+  function crtQ() {
+    var addtosec = document.getElementById("selected_sec").selectedIndex ;
+    var currentsec = document.getElementsByClassName("sec_div")[addtosec];
+    var secqlist = currentsec.getElementsByTagName("ol")[0];
+  
+    var my_div = document.createElement("div");
+    var ans_div = document.createElement("div");
+    var rmbtn = document.createElement("button");
+    var copybtn = document.createElement("button");
+    var askQ = document.createElement("input");
+    var ans = document.createElement("input");
+    var label = document.createElement("label");
+    var rcheckbox = document.createElement("input");
+    var round = document.createElement("span");
+  
+    var textarr = ["Short Ans ","Paragraph","Multiple choice",
+          "Checkboxes","Drop-down","File upload","linear scale",
+          "multiple choice grid","tick box grid","Date","Time"];
+  
+    //Create and append select list
+    var qtypeselect = document.createElement("select");
+    my_div.appendChild(qtypeselect);
+  
+    //Create and append the options
+    for (var i = 0; i < textarr.length; i++) {
+        var option = document.createElement("option");
+        option.text = textarr[i];
+        qtypeselect.appendChild(option);
+    }
+  
+    my_div.setAttribute("class", "oneq");               
+    ans_div.setAttribute("class", "textans_div");               
+    rmbtn.setAttribute("class", "removebtn");
+    rmbtn.setAttribute("onclick", "DeleteQ(this)");
+    copybtn.setAttribute("class", "removebtn");
+    copybtn.setAttribute("onclick", "CopyQ(this)");
+    qtypeselect.setAttribute("onchange", "modifyQ(this)");
+    qtypeselect.setAttribute("class", "Qtype");
+    askQ.setAttribute("class", "mainQ");
+    askQ.setAttribute("value", "write your question here");
+    ans.setAttribute("value", " short ans here");
+    ans.setAttribute("class", "textans");
+    ans.setAttribute("type", "text");
+    ans.setAttribute("disabled", true);
+  
+    label.setAttribute("class","switch" )
+    rcheckbox.setAttribute("type","checkbox" )
+    rcheckbox.setAttribute("class","toggle" )
+    round.setAttribute("class","slider round" )
+    
+    var rmtext = document.createTextNode("remove");
+    var copytext = document.createTextNode("Copy");
+    var requiretext = document.createTextNode("Require");
+    // requiretext.setAttribute("class", "requiretext");
+  
+  
+    label.appendChild(rcheckbox);
+    label.appendChild(round);
+  
+    rmbtn.appendChild(rmtext);
+  
+    my_div.appendChild(rmbtn);
+    my_div.appendChild(copybtn);
+    my_div.appendChild(requiretext);
+  
+    my_div.appendChild(label);
+  
+    copybtn.appendChild(copytext);
+    my_div.appendChild(askQ);
+    ans_div.appendChild(ans);
+    my_div.appendChild(ans_div);
+      
+    var node = document.createElement("LI");
+    node.appendChild(my_div);
+    secqlist.appendChild(node);
+  }
+  function DeleteQ(button) {
+      var parent = button.parentNode;
+      var grand_father = parent.parentNode;
+      var gg_father = grand_father.parentNode;
+      gg_father.removeChild(grand_father);
+
+      var Qid_del = grand_father.querySelector('.q_id');
+      if(grand_father.contains(Qid_del)){ 
+          var qid=Qid_del.value;
+          q_delet+=qid+" ## ";
+         }
+      else{}
+    }
+  function CopyQ(button) {
+    var addtosec = document.getElementById("selected_sec").selectedIndex ;
+    var target_sec = document.getElementsByClassName("sec_div")[addtosec];
+    var secqlist = target_sec.querySelector("ol");
+
+    var parent = button.parentNode;
+    var clone = parent.cloneNode(true);
+
+    var invis = clone.querySelector('.invis');
+    if(clone.contains(invis)){
+      var invisall = clone.getElementsByClassName("invis");
+      for (var i = invisall.length - 1; i >= 0; i--) {
+        invisall[i].remove();
+      }
+    }  else{}
+
+
+    var qtype_index = parent.getElementsByClassName("Qtype")[0].selectedIndex;
+  
+    var qtype2 = clone.getElementsByClassName("Qtype")[0];
+    qtype2.options[qtype_index].selected = true;
+
+    var node = document.createElement("LI");
+    node.appendChild(clone);
+    secqlist.appendChild(node);
+  }
+  function modifyQ(button){
+    var ind = button.selectedIndex;
+    var parent = button.parentNode;
+  
+    if (ind ==0 || ind ==1) {
+        var ansdiv = parent.querySelector('.textans_div');
+        if(parent.contains(ansdiv)){
+          var ansinfld =ansdiv.querySelector('input');
+          if(ind ==0) { ansinfld.setAttribute("value", "short answer here"); } 
+          else { ansinfld.setAttribute("value", "long answer here"); } 
+        }
+        else{
+            var ansdivoptn = parent.querySelector("div:not(.textans_div)");
+            ansdivoptn.remove();
+  
+          var ans_newdiv = document.createElement("div");
+          ans_newdiv.setAttribute("class", "textans_div");                
+  
+          var shortans = document.createElement("input");
+          shortans.setAttribute("class", "textans");                
+          shortans.setAttribute("type", "text");
+          shortans.setAttribute("disabled", true);                
+          if(ind == 0){ shortans.setAttribute("value", "short answer here"); }
+          if(ind==1) {      shortans.setAttribute("value", "long answer here"); }
+          
+          ans_newdiv.appendChild(shortans);
+          parent.appendChild(ans_newdiv);
+      }
+    }
+  
+      else if(ind >= 2 && ind <=4) {
+        var ansdiv = parent.querySelector('.options_div');
+        if(parent.contains(ansdiv)){}
+        else{
+            var ansdiv2 =parent.querySelector("div:not(.options_div)");
+            ansdiv2.remove();
+  
+          var ans_newdiv = document.createElement("div");
+          var optnlist = document.createElement("ul");
+          var optnlist2 = document.createElement("ul");
+          var option1 = document.createElement("li");
+          var extraoptn = document.createElement("li");
+          var optnval = document.createElement("input");
+          var optbtn = document.createElement("button");
+          var otherbtn = document.createElement("button");
+  
+          var addtxt = document.createTextNode("Add new Option");
+          var othertxt = document.createTextNode("Other");
+          var ortxt = document.createTextNode("  OR  ");
+  
+          ans_newdiv.setAttribute("class", "options_div");                
+          optnval.setAttribute("class", "option");                
+          optnval.setAttribute("type", "text");               
+          optnval.setAttribute("value", "Option-1");
+  
+          optbtn.setAttribute("onclick", "addopt(this)");               
+          otherbtn.setAttribute("onclick", "addother(this)");
+  
+          optbtn.appendChild(addtxt);
+          otherbtn.appendChild(othertxt);
+          extraoptn .appendChild(optbtn);
+          extraoptn .appendChild(ortxt);
+          extraoptn .appendChild(otherbtn);
+  
+          option1 .appendChild(optnval);
+          optnlist.appendChild(option1);                    
+          optnlist2.appendChild(extraoptn);
+          ans_newdiv.appendChild(optnlist);
+          ans_newdiv.appendChild(optnlist2);
+          parent.appendChild(ans_newdiv);
+        }
+      }
+      else if(ind == 5){
+          var olderans_div =parent.querySelector("div");
+          olderans_div.remove();
+  
+        var ans_newdiv = document.createElement("div");
+        ans_newdiv.setAttribute("class", "file_div");
+  
+        var file_in = document.createElement("input");
+        var note = document.createTextNode(" user will upload a file here ");
+        file_in.setAttribute("type", "file");
+        file_in.setAttribute("class", "file_input");
+        file_in.setAttribute("disabled", true);
+  
+        ans_newdiv.appendChild(file_in);
+        ans_newdiv.appendChild(note);
+        parent.appendChild(ans_newdiv);
+      }
+      else if(ind == 6){
+          var olderans_div =parent.querySelector("div");
+          olderans_div.remove();
+  
+        var ans_newdiv = document.createElement("div");
+        ans_newdiv.setAttribute("class", "scale_div");
+  
+        var start = document.createTextNode(" start-label:- ");
+        var end = document.createTextNode(" end-label:- ");
+        var to = document.createTextNode(" to ");
+        var start_in = document.createElement("input");
+        var end_in = document.createElement("input");
+  
+        var startarr = [0,1];
+        var endarr = [2,3,4,5,6,7,8,9,10];
+  
+        var select_start = document.createElement("select");
+        var select_end = document.createElement("select");
+  
+        for (var i = 0; i < startarr.length; i++) {
+            var option = document.createElement("option");
+            option.text = startarr[i];
+            select_start.appendChild(option);
+        }
+        for (var i = 0; i < endarr.length; i++) {
+            var option = document.createElement("option");
+            option.text = endarr[i];
+            select_end.appendChild(option);
+        }
+  
+        ans_newdiv.appendChild(select_start);
+        ans_newdiv.appendChild(to);                   
+        ans_newdiv.appendChild(select_end);
+        ans_newdiv.appendChild(start);
+        ans_newdiv.appendChild(start_in);
+        ans_newdiv.appendChild(end);
+        ans_newdiv.appendChild(end_in);
+        parent.appendChild(ans_newdiv);
+      }
+  
+      else if(ind == 7 || ind ==8) {
+        var ansdiv = parent.querySelector('.RCoptions_div');
+        if(parent.contains(ansdiv)){}
+        else{
+            var ansdiv2 =parent.querySelector("div:not(.RCoptions_div)");
+            ansdiv2.remove();
+  
+          var ans_newdiv = document.createElement("div");
+          ans_newdiv.setAttribute("class", "RCoptions_div");  
+          var rowtxth = document.createElement("h4");
+          var coltxth = document.createElement("h4");
+          var RowoptnList = document.createElement("ul");
+          var RowoptnList2 = document.createElement("ul");
+          var option1 = document.createElement("li");
+          var extraoptn = document.createElement("li");
+          var optnval = document.createElement("input");
+          var optbtn = document.createElement("button");
+  
+          var addtxt = document.createTextNode("Add new Option");
+          var othertxt = document.createTextNode("Other");
+          var rowtxt = document.createTextNode("Rows:-");
+          var coltxt = document.createTextNode("Columns:-");
+  
+          rowtxth .appendChild(rowtxt);
+          coltxth .appendChild(coltxt);
+  
+          optnval.setAttribute("class", "option");                
+          optnval.setAttribute("type", "text");               
+          optnval.setAttribute("value", "Option-1");
+  
+          optbtn.setAttribute("onclick", "addopt(this)");               
+  
+          optbtn.appendChild(addtxt);
+          extraoptn .appendChild(optbtn);
+  
+          option1 .appendChild(optnval);
+          RowoptnList.appendChild(option1);                   
+          RowoptnList2.appendChild(extraoptn);
+    var ColoptnList = document.createElement("ul");
+    var ColoptnList2 = document.createElement("ul");
+    var option1 = document.createElement("li");
+    var extraoptn = document.createElement("li");
+    var optnval = document.createElement("input");
+    var optbtn = document.createElement("button");
+  
+    var addtxt = document.createTextNode("Add new Option");
+    var othertxt = document.createTextNode("Other");
+  
+    optnval.setAttribute("class", "option");                
+    optnval.setAttribute("type", "text");               
+    optnval.setAttribute("value", "Option-1");
+  
+    optbtn.setAttribute("onclick", "addopt(this)");               
+  
+    optbtn.appendChild(addtxt);
+    extraoptn .appendChild(optbtn);
+  
+    option1 .appendChild(optnval);
+    ColoptnList.appendChild(option1);                   
+    ColoptnList2.appendChild(extraoptn);
+  
+          ans_newdiv.appendChild(rowtxth);
+          ans_newdiv.appendChild(RowoptnList);
+          ans_newdiv.appendChild(RowoptnList2);
+          ans_newdiv.appendChild(coltxth);
+          ans_newdiv.appendChild(ColoptnList);
+          ans_newdiv.appendChild(ColoptnList2);
+          parent.appendChild(ans_newdiv);
+        }
+      }
+  
+      else if(ind==9){
+          var olderans_div =parent.querySelector("div");
+          olderans_div.remove();
+  
+        var ans_newdiv = document.createElement("div");
+        ans_newdiv.setAttribute("class", "date_div");
+  
+        var date_in = document.createElement("input");
+        date_in.setAttribute("type", "date");
+  
+        ans_newdiv.appendChild(date_in);
+        parent.appendChild(ans_newdiv);
+      }
+      else if(ind==10){
+          var olderans_div =parent.querySelector("div");
+          olderans_div.remove();
+  
+        var ans_newdiv = document.createElement("div");
+        ans_newdiv.setAttribute("class", "time_div");
+  
+        var time_in = document.createElement("input");
+        time_in.setAttribute("type", "time");
+  
+        ans_newdiv.appendChild(time_in);
+        parent.appendChild(ans_newdiv);
+      }
+      else{}
+    }
+  
+  function addopt(button){
+    var parent = button.parentNode;
+    var grand_father = parent.parentNode.previousSibling;
+    var optnindex = grand_father.childElementCount + 1;
+  
+    var option2 = document.createElement("li");
+    var optnval = document.createElement("input");
+    var remove_opt = document.createElement("button");
+    var remove_txt = document.createTextNode(" Remove Option");
+  
+    optnval.setAttribute("class", "option");                
+    optnval.setAttribute("type", "text");               
+    optnval.setAttribute("value","Option-" + optnindex);
+    remove_opt.setAttribute("onclick","remove_opt(this)");
+  
+    remove_opt.appendChild(remove_txt);
+    option2 .appendChild(optnval);
+    option2 .appendChild(remove_opt);
+  
+    grand_father.appendChild(option2);
+  }
+  
+  function addother(button){
+      var parent = button.parentNode;
+      var grand_father = parent.parentNode;
+      if(grand_father.childElementCount > 1){}
+  
+      else{
+      var othroptn = document.createElement("li");
+      var optnval = document.createElement("input");
+      var remove_opt = document.createElement("button");
+      var remove_txt = document.createTextNode(" Remove Option");
+  
+      optnval.setAttribute("class", "otheroptn");               
+      optnval.setAttribute("type", "text");               
+      optnval.setAttribute("value","Other ...");
+      optnval.setAttribute("disabled",true);
+      remove_opt.setAttribute("onclick","remove_opt(this)");
+  
+      remove_opt.appendChild(remove_txt);
+      othroptn.appendChild(optnval);
+      othroptn.appendChild(remove_opt);
+  
+      grand_father.insertBefore(othroptn, grand_father.lastChild);
+    }
+  }
+  function remove_opt(button) {
+      var parent = button.parentNode;
+      var grand_father = parent.parentNode;
+      grand_father.removeChild(parent);
+
+      var opt_id_del = parent.querySelector('.optn_id');
+      if(parent.contains(opt_id_del)){ 
+          var optid=opt_id_del.value;
+          opt_delet+=optid+" ## ";
+         }
+      else{}
+
+      var row_id_del = parent.querySelector('.row_id');
+      if(parent.contains(row_id_del)){ 
+          var rowid=row_id_del.value;
+          row_delet+=rowid+" ## ";
+         }
+      else{}
+    }
+ 
+ function show(){
+  var myinput1 = document.getElementById("sec_del");
+  var myinput2 = document.getElementById("q_del");
+  var myinput3 = document.getElementById("sur_update");
+  var myinput4 = document.getElementById("sec_update");
+  var myinput5 = document.getElementById("q_update");
+  var myinput6 = document.getElementById("opt_del");
+  var myinput7 = document.getElementById("row_del");
+
+  var sp1 = " #~# ", sp2=" ## ",sp3=" #@# ";
+  var text1 = sec_delet;                          //sec_deleted .....ids  sp2
+  var text2 = q_delet;                          //Q_deleted ..... ids   sp2
+  var text3 = "";                          //survey_update
+  var text4 = "";                          //sec_update
+  var text5 = "";                          //Q_update
+  var text6 = opt_delet;                         //opt_deleted
+  var text7 = row_delet;                         //row_deleted
+
+  var header = document.getElementsByClassName("form_ttl");
+  for(var i = 0; i < 3; i++) {    
+  text3 += header[i].value + sp1;
+  }
+  text3 += header[3].checked + sp1;
+
+
+  var allsec_div = document.getElementsByClassName("sec_div");
+  var order = 0;
+  for(var s = 0; s < allsec_div.length; s++){
+    curr_sec = allsec_div[s];
+    var secnum = s+1;
+    var title = curr_sec.getElementsByClassName("sec_ttl")[0].value;
+    var desc = curr_sec.getElementsByClassName("sec_desc")[0].value;
+    var sec_idi = "-1";
+
+    var secid = curr_sec.querySelector('.sec_id');
+    if(curr_sec.contains(secid)){ sec_idi=secid.value;}
+    else{}
+    
+
+    text4 += sec_idi + sp2+ secnum +sp2+ title + sp2 + desc + sp2+ ""+ sp1;
+
+  var Q_div =  curr_sec.querySelectorAll('.oneq');
+  var length5 = Q_div.length;
+  var mainQ , qtype, req,list1,list2,list11,list22,optnlength,other=0,optns,rows="",constraint="";
+
+  for(var i = 0; i < length5; i++) {
+      parent = Q_div[i];
+      mainQ = parent.getElementsByClassName("mainQ")[0].value;
+      qtype = parent.getElementsByClassName("Qtype")[0].selectedIndex;
+      req = parent.getElementsByClassName("toggle")[0].checked;
+      if(qtype >=2 && qtype<=4){
+          list1 =  parent.getElementsByTagName("ul")[0];
+          list2 =  parent.getElementsByTagName("ul")[1];
+          list11 =  list1.getElementsByTagName("li");
+          list22 =  list2.getElementsByTagName("li");
+      if(list22.length >=2){other = 1;}
+      else{other = 0;}
+          optnlength = list11.length;
+          optns="";
+
+          for(var optnum=0; optnum<optnlength;optnum++){
+            var opt_idi = "-1";
+            var optid = list11[optnum].querySelector('.optn_id');
+            if(list11[optnum].contains(optid)){ opt_idi=optid.value;}
+            else{}
+            var optnval = list11[optnum].getElementsByClassName("option")[0].value;
+
+            optns+= opt_idi + " #&# " + optnval  + sp3;
+          }
+      } 
+      else if(qtype >=7 && qtype<=8){                               //rows+column 
+          rowslist =  parent.getElementsByTagName("ul")[0];
+          column =  parent.getElementsByTagName("ul")[2];
+          rowsoptns =  rowslist.getElementsByTagName("li");
+          coloptns =  column.getElementsByTagName("li");
+
+          optns="";
+          for(var optnum=0; optnum<coloptns.length;optnum++){
+            var opt_idi = "-1";
+            var optid = coloptns[optnum].querySelector('.optn_id');
+            if(coloptns[optnum].contains(optid)){ opt_idi=optid.value;}
+            else{}
+            var optnval = coloptns[optnum].getElementsByClassName("option")[0].value;
+          optns+= opt_idi + " #&# " + optnval  + sp3;
+          }
+
+          rows="";
+          for(var optnum=0; optnum<rowsoptns.length;optnum++){
+            var rowidi = "-1";
+            var rowid = rowsoptns[optnum].querySelector('.row_id');
+            if(rowsoptns[optnum].contains(rowid)){ rowidi=rowid.value;}
+            else{}
+            var rowval = rowsoptns[optnum].getElementsByClassName("option")[0].value;
+          rows+= rowidi + " #&# " + rowval  + sp3;
+          }
+      }
+      else if( qtype == 6){
+          var scalediv =  parent.getElementsByTagName("div")[0];
+          var startlbl =  scalediv.getElementsByTagName("input")[0].value;
+          var endlbl =  scalediv.getElementsByTagName("input")[1].value;
+
+          var startindex =  parent.getElementsByTagName("select")[0].selectedIndex;
+          var endindex =  parent.getElementsByTagName("select")[1].selectedIndex;
+          constraint=startindex+sp3+endindex+sp3+startlbl+sp3+endlbl;
+      }
+
+      else{other = 0; optns=""; rows=""; constraint="";}
+      order++;
+
+    var q_idi = "-1";
+    var qid = parent.querySelector('.q_id');
+    if(parent.contains(qid)){ q_idi=qid.value;}
+    else{}
+
+    // sp2=##
+    //  text5 = id, secnum, qtype, req, order, other, title, desc,  constraint, options,rows
+      text5 += q_idi + sp2 + secnum + sp2 + qtype + sp2 + req  +sp2 + order +sp2 + other +  sp2 + mainQ +
+             sp2+ "" +sp2+ constraint +sp2 + optns + sp2 + rows + sp1 ;
+      }
+    }
+  
+
+  myinput1.setAttribute("value", text1);
+  myinput2.setAttribute("value", text2);
+  myinput3.setAttribute("value", text3);
+  myinput4.setAttribute("value", text4);
+  myinput5.setAttribute("value", text5);
+  myinput6.setAttribute("value", text6);
+  myinput7.setAttribute("value", text7);
+}
+
+  </script>
+  <script>
+    function alreaysec(){
+      var total_sec = "{{ num_sec }}";
+
+      for (var i=1; i<=total_sec; i++){ 
+        var secoptn = document.getElementById("selected_sec");
+        var option = document.createElement("option");
+        option.text = i;
+        secoptn.appendChild(option);
+      }
+
+    }
+  </script>
+
 </body>
 </html>
