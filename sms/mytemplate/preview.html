@@ -7,12 +7,12 @@
 
   <style>
     .form_ttl{
-        font-size: 25px;
+        font-size: 36px;
         background-color: #66ffff;
         width: 40%;
     }
     .formdesc{
-        font-size: 18px;
+        font-size: 25px;
         background-color: #66ffff;
         width: 40%;
     }
@@ -21,19 +21,19 @@
         width: 40%;
     }
     .sectitle{
-        font-size: 20px;
+        font-size: 30px;
 
     }
     .secdesc{
-        font-size: 17px;
-
-    }
-    .mainq{
         font-size: 18px;
 
     }
+    .mainq{
+        font-size: 25px;
+
+    }
     .oneq{
-        background-color: #e6e6e6; border: 1px solid black; padding: 15px;
+        background-color: #e6e6e6; border: 1px solid black; padding: 3px 15px 15px 15px ;
 
     }
     .option{
@@ -58,6 +58,7 @@
        background-color: #6600cc; color: white; font-size: 22px;
     }
     .invis{
+        display: none;
     }
 
     </style>
@@ -141,8 +142,7 @@
                 <input type="file" class="fileupload">
 
             {% elif q.qtype == 6 %}
-                <p>{{q.constraint}}</p>
-
+                <input type="text">
             {% elif q.qtype == 7 %}
 
                     <table>
@@ -288,13 +288,13 @@
         else if (qtype ==9){
          optnids="";
             var optn_ele = allq[i].getElementsByClassName("mydatetime")[0];
-            optnids = optn_ele.value;
+            other_text = optn_ele.value;
         }
 
         else if (qtype ==10){
          optnids="";
             var optn_ele = allq[i].getElementsByClassName("mydatetime")[0];
-            optnids = optn_ele.value;
+            other_text = optn_ele.value;
         }
         else{
          optnids="";   

@@ -19,7 +19,7 @@
       background-color: transparent;border-bottom: 3px solid rgb(30, 122, 228); margin : 10px;
     }
     .invis{
-      background-color: pink;
+      display: none;
     }
    /* .sec_num, .sec_id{
       display: none;
@@ -68,6 +68,7 @@
         </div>
         <input type="submit" onclick="show()" value="Save" style="margin: 8px; font-size: 20px;">
       </form>
+      <button onclick="share(this)"> Share</button>
 
   </div>     
     
@@ -901,6 +902,15 @@
   myinput5.setAttribute("value", text5);
   myinput6.setAttribute("value", text6);
   myinput7.setAttribute("value", text7);
+}
+
+function share(button){
+  var parent = button.parentNode;
+      var herelink = document.createElement("input");
+      var mylink = window.location.href;
+      var newlink = mylink.replace("editor","preview")
+      herelink.setAttribute("value", newlink);
+      parent.appendChild(herelink);
 }
 
   </script>
