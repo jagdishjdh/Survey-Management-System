@@ -51,6 +51,7 @@ class Row(models.Model):
 
 # 7
 class Response(models.Model):
+    response_num = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
