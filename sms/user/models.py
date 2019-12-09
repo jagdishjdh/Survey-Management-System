@@ -1,6 +1,7 @@
 
 from django.db import models
 from django.contrib.auth.admin import User
+from datetime import datetime
 # Create your models here.
 
 # 1
@@ -51,7 +52,7 @@ class Row(models.Model):
 
 # 7
 class Response(models.Model):
-    response_num = models.IntegerField()
+    response_time = models.DateTimeField(default=datetime.now)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)

@@ -238,12 +238,12 @@ def editor(request, sur_id=None):
 
                 return redirect('/user/editor/'+str(survey.id))
 
-            sec_lst = Section.objects.filter(survey=survey).order_by('section_no').order_by('id')
+            sec_lst = Section.objects.filter(survey=survey).order_by('section_no')
             
             # creating form object to be sent to editor page
             dic = {}
             for sec in sec_lst:
-                ques_lst = Question.objects.filter(section=sec)
+                ques_lst = Question.objects.filter(section=sec).order_by('id')
                 q_dic = {}
 
                 for q in ques_lst:
@@ -293,25 +293,25 @@ def response(request, sur_id=None):
                     t22 = t22 + q.title+' # '
             ngr = t11[:-3] + ' ## ' + t22[:-3]
 
-            resps = Response.objects.filter(survey=sur[0]).exclude(question__qtype__in=[7,8]).order_by('response_num','question__order')
+            resps = Response.objects.filter(survey=sur[0]).exclude(question__qtype__in=[7,8]).order_by('response_time','question__order')
             print(resps)
-            # responses78 = Response.objects.filter(survey=sur[0],question__qtype__in=[7,8]).order_by('response_num','row')
+            # responses78 = Response.objects.filter(survey=sur[0],question__qtype__in=[7,8]).order_by('response_time','row')
             # print(responses78)
             # resp78title = Response.objects.filter(survey=sur[0],question__qtype__in=[7,8]).distinct('question__order','row').order_by('question__order','row')
             # print(resp78title)
 
             # anonymous = sur[0].anonymous
             try:
-                temp_resp_num = resps[0].response_num
+                temp_resp_num = resps[0].response_time
                 temp_response = ''
                 print('aaaaaaa1')
                 for resp in resps:
                     print(resp.question.qtype)
-                    if resp.response_num != temp_resp_num:
+                    if resp.response_time != temp_resp_num:
                         print('aaaaaaa2')
                         ngr = ngr + ' ## ' + temp_response[:-3]
                         temp_response = ''
-                        temp_resp_num = resp.response_num
+                        temp_resp_num = resp.response_time
 
                     # short & long answer type
                     if resp.question.qtype in [0,1]:
@@ -370,13 +370,13 @@ def response(request, sur_id=None):
             #             gr_temp = gr_temp[:-3]
 
             #             cur_q_res = responses78.filter(question__order=temp_num)
-            #             temp_resp_num = cur_q_res[0].response_num
+            #             temp_resp_num = cur_q_res[0].response_time
             #             temp_response = ''
             #             for resp in cur_q_res:
-            #                 if resp.response_num != temp_resp_num:
+            #                 if resp.response_time != temp_resp_num:
             #                     gr_temp = gr_temp + ' ## ' + temp_response[:-3]
             #                     temp_response = []
-            #                     temp_resp_num = resp.response_num
+            #                     temp_resp_num = resp.response_time
 
             #                 op_ids = [int(x) for x in re.split("@",resp.options)]
             #                 t = ''
@@ -433,8 +433,6 @@ def delete_survey(request, sur_id=None):
         return render(request, 'login.html')
 
 
-# response_num = 1
-
 def preview(request, sur_id=None):
     # if this is post request then data is to be saved first
     if sur_id is not None:
@@ -442,7 +440,7 @@ def preview(request, sur_id=None):
             survey = Survey.objects.get(id=sur_id)
 
             if request.method == 'POST':
-                response_num = int(datetime.now().strftime('%Y%m%d%H%M%s')) % 2147483648
+                response_time = datetime.now() #int(datetime.now().strftime('%Y%m%d%H%M%s')) % 2147483648
 
                 answers = request.POST['text_answer']
                 answers = re.split(' ## ',answers)[:-1]
@@ -450,7 +448,7 @@ def preview(request, sur_id=None):
                     answers[i] = re.split(' # ', answers[i])
                 
                 for ans in  answers:
-                    new_res = Response(response_num=response_num,
+                    new_res = Response(response_time=response_time,
                             survey=survey,
                             question=Question.objects.get(id=int(ans[0])),
                             options=ans[2])
@@ -482,7 +480,7 @@ def preview(request, sur_id=None):
             # creating form object to be sent to editor page
             dic = {}
             for sec in sec_lst:
-                ques_lst = Question.objects.filter(section=sec)
+                ques_lst = Question.objects.filter(section=sec).order_by('id')
                 q_dic = {}
 
                 for q in ques_lst:
