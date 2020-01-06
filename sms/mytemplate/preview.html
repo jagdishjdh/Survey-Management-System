@@ -30,7 +30,6 @@
     }
     .mainq{
         font-size: 25px;
-
     }
     .oneq{
         background-color: #e6e6e6; border: 1px solid black; padding: 3px 15px 15px 15px ;
@@ -62,247 +61,273 @@
     }
 
     </style>
-    <body>
-<div id="heading">
-    <p class="form_ttl">{{form.survey.title}}</p>
-    <p class="formdesc">{{form.survey.desc}}</p>
-</div>
- <hr style="background-color: : red; height: 8px;">
-{% for sec , qdict in form.dictionary.items %}
-<div>
-<div class="secdiv">
-    <input type="text"   class="sec_id invis"   value="{{ sec.id }}" > <br>
-    <p class="sectitle">{{ sec.title }}</p>
-    <p class="secdesc">{{ sec.desc }}</p>
-</div>
-    {% for q , optn in qdict.items %}
-        <div class="oneq">
-            <input type="text"   class="q_id invis"   value="{{ q.id }}" > <br>
-            <input type="text"   class="q_type invis"   value="{{ q.qtype }}" > <br>
-            <p class="mainq">{{ q.title }}</p>
-
-            {% if q.qtype == 0 %}
-                {% if q.required %}
-                    <input type="text" class="textans" required="true">
-                {% else %}
-                    <input type="text" class="textans">
-                {% endif %}
-
-
-            {% elif q.qtype == 1 %}
-                {% if q.required %}
-                    <textarea rows="6" class="textans" required></textarea>
-                {% else %}
-                    <textarea rows="6" class="textans"></textarea>
-                 {% endif %}
-
-
-            {% elif q.qtype == 2 %}
-                <form>
-                {% for opt in optn.0 %}
-                    <input type="radio" class="option">{{opt.value}} <br>
-                    <input type="text"   class="optn_id invis"   value="{{ opt.id }}" > <br>
-
-                {% endfor %}
-                {% if q.other == 1  %}
-                    <input type="radio" class="option">Other <br>
-                    <input type="text" class="textans"><br>
-                {% else %}
-                {% endif %}
-                </form>
-
-            {% elif q.qtype == 3 %}
-                <form>
-                {% for opt in optn.0 %}
-                    <input type="checkbox" class="option">{{opt.value}} <br>
-                    <input type="text"   class="optn_id invis"   value="{{ opt.id }}" > <br>
-                {% endfor %}
-                {% if q.other == 1  %}
-                    <input type="checkbox" class="option">Other <br>
-                    <input type="text" class="textans"><br>
-                {% else %}
-                {% endif %}
-                </form>
-
-
-            {% elif q.qtype == 4 %}
-                {% if q.required %}
-                    <select required="true">
-                {% else %}
-                    <select>
-                 {% endif %}
-
-                    <option value="">Choose</option>
-                {% for opt in optn.0 %}
-                    <option class="option" value="{{ opt.id }}">{{opt.value}} </option> <br>
-
-                {% endfor %}
-                </select>
-            {% elif q.qtype == 5 %}
-                <input type="file" class="fileupload">
-
-            {% elif q.qtype == 6 %}
-                <input type="text">
-            {% elif q.qtype == 7 %}
-
-                    <table>
-                    <tr>
-                        <th></th>
-                      {% for opt in optn.0 %}    
-                       <th> <p class="column" style="display: inline;">{{opt.value}}</p> </th>
-                      {% endfor %}
-                    </tr>
-
-                      {% for row in optn.1 %}
-                    <tr>
-                        <th> <p class="row">{{row.value}}</p></th>
-                      {% for opt in optn.0 %}    
-                       <th> <input type="radio"> </th>
-                      {% endfor %}
-                    </tr>
-                      {% endfor %}
-                  </table>
-
-            {% elif q.qtype == 8 %}
-
-                    <table>
-                    <tr>
-                        <th></th>
-                      {% for opt in optn.0 %}    
-                       <th> <p class="column" style="display: inline;">{{opt.value}}</p> </th>
-                      {% endfor %}
-                    </tr>
-
-                      {% for row in optn.1 %}
-                    <tr>
-                        <th> <p class="row">{{row.value}}</p></th>
-                      {% for opt in optn.0 %}    
-                       <th> <input type="checkbox"> </th>
-                      {% endfor %}
-                    </tr>
-                      {% endfor %}
-                  </table>
-
-          
-            {% elif q.qtype == 9 %}
-                {% if q.required %}
-                   <input type="date" class="mydatetime" required="true">
-                {% else %}
-                   <input type="date" class="mydatetime">
-                 {% endif %}
-
-            {% elif q.qtype == 10 %}
-                {% if q.required %}
-                    <input type="time" class="mydatetime" required="true">
-                {% else %}
-                    <input type="time" class="mydatetime">
-                 {% endif %}
-
-            {% else %}
-            {% endif %}
+<body>
+<form id="save_form" action="/user/preview/{{form.survey.id}}" method="POST">
+    {% csrf_token %}
+    <div id="heading">
+        <p class="form_ttl">{{form.survey.title}}</p>
+        <p class="formdesc">{{form.survey.desc}}</p>
+    </div>
+    <hr style="background-color:red; height: 4px;">
+    {% for sec , qdict in form.dictionary.items %}
+    <div>
+    <div class="secdiv">
+        <input type="text"   class="sec_id invis"   value="{{ sec.id }}" > <br>
+        <p class="sectitle">{{ sec.title }}</p>
+        <p class="secdesc">{{ sec.desc }}</p>
         </div>
-        <br>
+            {% for q , optn in qdict.items %}
+                <div class="oneq">
+                    <input type="text"   class="q_id invis"   value="{{ q.id }}" > <br>
+                <input type="text"   class="q_type invis"   value="{{ q.qtype }}" > <br>
+                
+                {% if q.required %}
+                        <p class="mainq">{{ q.order }}. {{ q.title }}<span style="color: red;">*</span></p>
+                    {% else %}
+                        <p class="mainq">{{ q.order }}. {{ q.title }}</p>
+                    {% endif %}
+
+
+                {% if q.qtype == 0 %}
+                    {% if q.required %}
+                        <input type="text" class="textans" required="true">
+                    {% else %}
+                        <input type="text" class="textans">
+                    {% endif %}
+
+
+                {% elif q.qtype == 1 %}
+                    {% if q.required %}
+                        <textarea rows="6" class="textans" required></textarea>
+                    {% else %}
+                        <textarea rows="6" class="textans"></textarea>
+                    {% endif %}
+
+
+                {% elif q.qtype == 2 %}
+                    {% for opt in optn.0 %}
+                        {% if q.required %}
+                            <input type="radio" required class="option" name="{{q.title}}+{{q.qtype}}">{{opt.value}} <br>
+                        {% else %}
+                            <input type="radio" class="option" name="{{q.title}}+{{q.qtype}}">{{opt.value}} <br>
+                        {% endif %}
+                        <input type="text"  class="optn_id invis"   value="{{ opt.id }}" > <br>
+
+                    {% endfor %}
+                    {% if q.other == 1  %}
+                        <input type="radio" class="option" name="{{q.title}}+{{q.qtype}}">Other <br>
+                        <input type="text"  class="textans"><br>
+                    {% else %}
+                    {% endif %}
+
+                {% elif q.qtype == 3 %}
+                    {% for opt in optn.0 %}
+                        {% if q.required %}
+                            <input type="checkbox" class="option">{{opt.value}} <br>
+                        {% else %}
+                            <input type="checkbox" class="option">{{opt.value}} <br>
+                        {% endif %}
+                        <input type="text"   class="optn_id invis"   value="{{ opt.id }}" > <br>
+                    {% endfor %}
+                    {% if q.other == 1  %}
+                        <input type="checkbox" class="option">Other <br>
+                        <input type="text" class="textans"><br>
+                    {% else %}
+                    {% endif %}
+
+
+                {% elif q.qtype == 4 %}
+                    {% if q.required %}
+                        <select required="true">
+                    {% else %}
+                        <select>
+                    {% endif %}
+
+                        <option value="">Choose</option>
+                    {% for opt in optn.0 %}
+                        <option class="option" value="{{ opt.id }}">{{opt.value}} </option> <br>
+
+                    {% endfor %}
+                    </select>
+
+                {% elif q.qtype == 5 %}
+                    {% if q.required %}
+                        <input type="file" class="fileupload" required>
+                    {% else %}
+                        <input type="file" class="fileupload">
+                    {% endif %}
+
+                {% elif q.qtype == 6 %}
+                    {% if q.required %}
+                        <input type="text" required>
+                    {% else %}
+                        <input type="text">
+                    {% endif %}
+
+                {% elif q.qtype == 7 %}
+                    <table>
+                        <tr>
+                            <th></th>
+                        {% for opt in optn.0 %}    
+                            <th> <p class="column" style="display: inline;">{{opt.value}}</p> </th>
+                        {% endfor %}
+                        </tr>
+
+                        {% for row in optn.1 %}
+                        <tr>
+                            <th> <p class="row">{{row.value}}</p></th>
+                            {% for opt in optn.0 %}  
+                                {% if q.required %}
+                                    <th> <input type="radio" required name="{{q.title}}+{{row.value}}"> </th>
+                                {% else %}
+                                    <th> <input type="radio" name="{{q.title}}+{{row.value}}"> </th>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </table>
+
+                {% elif q.qtype == 8 %}
+                    <table>
+                        <tr>
+                            <th></th>
+                        {% for opt in optn.0 %}    
+                            <th> <p class="column" style="display: inline;">{{opt.value}}</p> </th>
+                        {% endfor %}
+                        </tr>
+
+                        {% for row in optn.1 %}
+                        <tr>
+                            <th> <p class="row">{{row.value}}</p></th>
+                            {% for opt in optn.0 %}  
+                                {% if q.required %}
+                                    <th> <input type="checkbox" name="{{q.title}}+{{row.value}}"> </th>
+                                {% else %}
+                                    <th> <input type="checkbox" name="{{q.title}}+{{row.value}}"> </th>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </table>
+
+            
+                {% elif q.qtype == 9 %}
+                    {% if q.required %}
+                    <input type="date" class="mydatetime" required="true">
+                    {% else %}
+                    <input type="date" class="mydatetime">
+                    {% endif %}
+
+                {% elif q.qtype == 10 %}
+                    {% if q.required %}
+                        <input type="time" class="mydatetime" required="true">
+                    {% else %}
+                        <input type="time" class="mydatetime">
+                    {% endif %}
+
+                {% else %}
+                {% endif %}
+            </div>
+            <br>
+        {% endfor %}
+    </div>
     {% endfor %}
-</div>
-{% endfor %}
+     <hr style="background-color: red; height: 2px;">
 
- <hr style="background-color: : red; height: 8px;">
 
-<form id="save_form" action="/user/preview/{{form.survey.id}}" method="POST" style="display: inline;">
-{% csrf_token %}
     <div style="display: none;">
-    <input name="text_answer"   id="text_answer" style="width: 100%;"> <br>
+        <input name="text_answer"   id="text_answer" style="width: 100%;"> <br>
     </div>
     <input type="submit" class="sub_bttn" onclick="mysubmit()" value="Submit" style="margin: 8px; font-size: 20px;">
 </form>
 
 <script>
     function mysubmit(){
-  var myinput1 = document.getElementById("text_answer");
-  var text1 = ""; 
-  var allq = document.getElementsByClassName("oneq");
-  var optnids="";
-  var other_text="";
-  var qids="";
-  var qtype="";
+        var myinput1 = document.getElementById("text_answer");
+        var text1 = ""; 
+        var allq = document.getElementsByClassName("oneq");
+        var optnids="";
+        var other_text="";
+        var qids="";
+        var qtype="";
 
-  for (var i =0; i< allq.length; i++) {
-       qids =  allq[i].getElementsByClassName("q_id")[0].value;
-       qtype =  allq[i].getElementsByClassName("q_type")[0].value;
+        for (var i =0; i< allq.length; i++) {
+            qids =  allq[i].getElementsByClassName("q_id")[0].value;
+            qtype =  allq[i].getElementsByClassName("q_type")[0].value;
 
-        var other_text_elemnet = allq[i].querySelector('.textans');
-        if(allq[i].contains(other_text_elemnet)){ 
-             other_text =  other_text_elemnet.value;
-        }
-        else{ other_text="";}
-
-        if(qtype ==0){
-         optnids="";   
-        }
-        else if (qtype ==1){
-         optnids="";   
-        }
-        else if (qtype ==2){
-         optnids="";   
-            var optn_ele = allq[i].getElementsByClassName("option");
-            var optn_ids = allq[i].getElementsByClassName("optn_id");
-            for (var j=0; j<optn_ele.length; j++ ) {
-                if(optn_ele[j].checked){ 
-                optnids += optn_ids[j].value + " @ ";
+                var other_text_elemnet = allq[i].querySelector('.textans');
+                if(allq[i].contains(other_text_elemnet)){ 
+                    other_text =  other_text_elemnet.value;
                 }
-                else{}
+                else{ other_text="";}
+
+                if(qtype ==0){
+                optnids="";   
                 }
-            }
-        else if (qtype ==3){
-         optnids="";   
-            var optn_ele = allq[i].getElementsByClassName("option");
-            var optn_ids = allq[i].getElementsByClassName("optn_id");
-            for (var j=0; j<optn_ele.length; j++ ) {
-                if(optn_ele[j].checked){ 
-                optnids += optn_ids[j].value + " @ ";
+                else if (qtype ==1){
+                optnids="";   
                 }
-                else{}
+                else if (qtype ==2){
+                optnids="";   
+                    var optn_ele = allq[i].getElementsByClassName("option");
+                    var optn_ids = allq[i].getElementsByClassName("optn_id");
+                    for (var j=0; j<optn_ele.length; j++ ) {
+                        if(optn_ele[j].checked){ 
+                        optnids += optn_ids[j].value + " @ ";
+                        }
+                        else{}
+                        }
+                    }
+                else if (qtype ==3){
+                optnids="";   
+                    var optn_ele = allq[i].getElementsByClassName("option");
+                    var optn_ids = allq[i].getElementsByClassName("optn_id");
+                    for (var j=0; j<optn_ele.length; j++ ) {
+                        if(optn_ele[j].checked){ 
+                        optnids += optn_ids[j].value + " @ ";
+                        }
+                        else{}
+                        }
                 }
-        }
-        else if (qtype ==4){
-         optnids="";   
-            var optn_ele = allq[i].getElementsByTagName("select")[0];
-            // var optn_ids = allq[i].getElementsByClassName("optn_id");
-            var ind = optn_ele.options[optn_ele.selectedIndex].value;
-            optnids = ind + " @ ";
-            
-        }
-        else if (qtype ==5){
-         optnids="";   
-        }
-        else if (qtype ==6){
-         optnids="";   
-        }
-        else if (qtype ==7){
-         optnids="";   
-        }
-        else if (qtype ==8){
-         optnids="";   
-        }
-        else if (qtype ==9){
-         optnids="";
-            var optn_ele = allq[i].getElementsByClassName("mydatetime")[0];
-            other_text = optn_ele.value;
-        }
+                else if (qtype ==4){
+                optnids="";   
+                    var optn_ele = allq[i].getElementsByTagName("select")[0];
+                    // var optn_ids = allq[i].getElementsByClassName("optn_id");
+                    var ind = optn_ele.options[optn_ele.selectedIndex].value;
+                    if(ind){optnids = ind + " @ ";}
+                    else{optnids = "";}
+                    
+                    
+                }
+                else if (qtype ==5){
+                optnids="";   
+                }
+                else if (qtype ==6){
+                optnids="";   
+                }
+                else if (qtype ==7){
+                optnids="";   
+                }
+                else if (qtype ==8){
+                optnids="";   
+                }
+                else if (qtype ==9){
+                optnids="";
+                    var optn_ele = allq[i].getElementsByClassName("mydatetime")[0];
+                    other_text = optn_ele.value;
+                }
 
-        else if (qtype ==10){
-         optnids="";
-            var optn_ele = allq[i].getElementsByClassName("mydatetime")[0];
-            other_text = optn_ele.value;
-        }
-        else{
-         optnids="";   
-        }
+                else if (qtype ==10){
+                optnids="";
+                    var optn_ele = allq[i].getElementsByClassName("mydatetime")[0];
+                    other_text = optn_ele.value;
+                }
+                else{
+                optnids="";   
+                }
 
-      text1+=qids + " # " + qtype+ " # " + optnids + " # " + other_text + " ## "
-  }
-
-
+            text1+=qids + " # " + qtype+ " # " + optnids + " # " + other_text + " ## "
+    }
 
   myinput1.setAttribute("value", text1);
 }    

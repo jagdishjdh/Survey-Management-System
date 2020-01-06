@@ -62,3 +62,8 @@ class Response(models.Model):
     date = models.DateField(null=True)
     time = models.TimeField(null=True)
     options = models.TextField(null=True)
+
+# 8
+# class Response_options(models.Model):
+#     response = models.ForeignKey(Response,on_delete=models.CASCADE)
+#     selected_opt = models.ForeignKey(Option,on_delete=models.CASCADE)
