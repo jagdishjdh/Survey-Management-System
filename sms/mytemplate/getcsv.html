@@ -7,7 +7,22 @@
   <title>CSV</title>
 </head>
 <body>
-  <pre>{{responses}}</pre>
+  <p id="save">{{responses}}</p>
+  <button onclick="download_csv()">Download</button>
+
+  <script>
+    function download_csv() {
+      var csvFile = "responses";
+      var textToSave = document.getElementById("save").innerHTML;
+
+      var hiddenElement = document.createElement('a');
+
+      hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
+      hiddenElement.target = '_blank';
+      hiddenElement.download = "{{filename}}"+'.csv';
+      hiddenElement.click();
+  }
+  </script>
 </body>
 </html>
   

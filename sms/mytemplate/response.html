@@ -5,21 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Response</title>
+    <style>
+      .chartContainer{
+        height: 300px;
+        width: 100%;
+      }
+    </style>
 </head>
 <body>
     <h1>Response</h1>
-    <a href="/user/editor/{{sur_id}}">editor</a> <br>
-    <a href="/user/">dashboard</a>
-    <a href="/user/get_csv/{{sur_id}}">Get csv of responses</a>
+    <a href="/user/editor/{{sur_id}}">Editor</a> <br>
+    <a href="/user/">Dashboard</a> <br>
+    <p id="save" style="display: none;">{{responses}}</p>
+    <button onclick="download_csv()">Get csv of responses</button>
     <div id="stats"></div>
-    <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+    <div id="charts">
+
+    </div>
 </body>
 <script type="text/javascript">
 
   var data = '{{non_grid_responses}}';
   var gr_data = "{{grid_responses}}";
 
-  window.alert(data)
+  // window.alert(data)
   var ll = data.split(" ## ");
   var rl = []
   for (var i =0;i<ll.length;i++)
@@ -80,20 +89,30 @@
   }
   //window.alert(xypts[1]);
   window.onload = function () {
-    var chart = new CanvasJS.Chart("chartContainer",
-    {
-      title:{
-       text: "Index Labels on dataPoints"   
-      },
-      data: [
-      {        
-        type: xytypes[3],
-        dataPoints: xypts[3]
-      }
-      ]
-    });
+    for(var i = 0; i < chr_types.length; i++){
 
-    chart.render();
+      var charts = document.getElementById("charts");
+      var newcontainer = document.createElement("div");
+      newcontainer.setAttribute("id", "chartContainer"+i); 
+      newcontainer.setAttribute("class", "chartContainer"); 
+
+      charts.appendChild(newcontainer);
+
+      var chart = new CanvasJS.Chart("chartContainer"+i,
+      {
+        title:{
+        text: "Index Labels on dataPoints"   
+        },
+        data: [
+        {        
+          type: xytypes[i],
+          dataPoints: xypts[i]
+        }
+        ]
+      });
+
+      chart.render();
+    }
   }
   function type_of_chart(col_name)
   {
@@ -165,6 +184,17 @@
     }
     return [a,b];
   }
+  function download_csv() {
+    var csvFile = "responses";
+    var textToSave = document.getElementById("save").innerHTML;
+
+    var hiddenElement = document.createElement('a');
+
+    hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
+    hiddenElement.target = '_blank';
+    hiddenElement.download = "{{filename}}"+'.csv';
+    hiddenElement.click();
+}
   
   </script>
    <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>

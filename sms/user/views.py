@@ -404,8 +404,14 @@ def response(request, sur_id=None):
             # print(ngr_final)
             # print(gr_final)
 
-            return render(request, 'response.html', {'non_grid_responses':ngr_final[:-4],
-                    'grid_responses':gr_final[:-4] , 'sur_id':sur[0].id})
+            finalresp = get_csv(sur_id)
+
+            return render(request, 'response.html', 
+                {'non_grid_responses':ngr_final[:-4],
+                'grid_responses':gr_final[:-4],
+                'sur_id':sur[0].id,
+                'responses':finalresp,
+                'filename':sur[0].title })
 
     else:
             
@@ -443,7 +449,7 @@ def preview(request, sur_id=None):
         try:
             survey = Survey.objects.get(id=sur_id)
 
-            if survey.endDate < datetime.now(tz=utc):
+            if survey.endDate is not None and survey.endDate < datetime.now(tz=utc):
                 return HttpResponse("<h2>This survey form is closed<h2>")
 
             if request.method == 'POST':
@@ -555,152 +561,149 @@ def collab(request,sur_id=None):
         messages.info(request, 'Please Login First')
         return render(request, 'login.html')
 
-def get_csv(request,sur_id=None):
+def get_csv(sur_id=None):
     if sur_id == None:
         return redirect('/user')
-        
-    if request.user.is_authenticated:
-        user = request.user
-        # print(sur_id,'****************')
-        sur = Survey.objects.filter(user_survey__user=user, id=sur_id)
+    
+    sur = Survey.objects.filter(id=sur_id)
 
-        if sur.count() == 0:
-            # means this survey does not belongs to the logged in user
-            return redirect('/user')
-        else:
-            # qtype1  qtype2 ...
-            # qtitle1 qtitle2 ...
-            # responses ...op1,op2
-            ngr = []
-            gr = []
-            # assuming all questions have different number in order
-            questions = Question.objects.filter(section__survey=sur[0]).order_by('order')
-            # qtypes = ['user','timestamp']
-            qtitles = ['user', 'email', 'time']
-            for q in questions:
-                if q.qtype == 7 or q.qtype == 8:
-                    pass
-                else:
-                    # qtypes.append(q.qtype)
-                    qtitles.append(q.title)
-            # ngr.append(qtypes)
-            ngr.append(qtitles)
+    if sur.count() == 0:
+        # means this survey does not belongs to the logged in user
+        return redirect('/user')
+    else:
+        # qtype1  qtype2 ...
+        # qtitle1 qtitle2 ...
+        # responses ...op1,op2
+        ngr = []
+        gr = []
+        # assuming all questions have different number in order
+        questions = Question.objects.filter(section__survey=sur[0]).order_by('order')
+        # qtypes = ['user','timestamp']
+        qtitles = ['user', 'email', 'time']
+        for q in questions:
+            if q.qtype == 7 or q.qtype == 8:
+                pass
+            else:
+                # qtypes.append(q.qtype)
+                qtitles.append(q.title)
+        # ngr.append(qtypes)
+        ngr.append(qtitles)
 
-            responses = Response.objects.filter(survey=sur[0]).exclude(question__qtype__in=[7,8]).order_by('response_time','question__order')
+        responses = Response.objects.filter(survey=sur[0]).exclude(question__qtype__in=[7,8]).order_by('response_time','question__order')
 
-            responses78 = Response.objects.filter(survey=sur[0],question__qtype__in=[7,8]).order_by('response_time','question__order','row__id')
-            # resp78title = Response.objects.filter(survey=sur[0],question__qtype__in=[7,8]).distinct('question__order','row').order_by('question__order','row')
+        responses78 = Response.objects.filter(survey=sur[0],question__qtype__in=[7,8]).order_by('response_time','question__order','row__id')
+        # resp78title = Response.objects.filter(survey=sur[0],question__qtype__in=[7,8]).distinct('question__order','row').order_by('question__order','row')
 
-            try:
-                temp_resp_time = responses[0].response_time
-                username = ''
-                useremail = ''
-                if responses[0].user is not None:
-                    username = responses[0].user.username
-                    useremail = responses[0].user.email
+        try:
+            temp_resp_time = responses[0].response_time
+            username = ''
+            useremail = ''
+            if responses[0].user is not None:
+                username = responses[0].user.username
+                useremail = responses[0].user.email
 
-                one_resp = []
-                # print('aaaaaaa1')
-                for resp in responses:
-                    # print(resp.question.qtype)
-                    if resp.response_time != temp_resp_time:
-                        one_resp.insert(0,temp_resp_time)
-                        one_resp.insert(0, useremail)
-                        one_resp.insert(0, username)
-                        ngr.append(one_resp)
-                        one_resp = []
+            one_resp = []
+            # print('aaaaaaa1')
+            for resp in responses:
+                # print(resp.question.qtype)
+                if resp.response_time != temp_resp_time:
+                    one_resp.insert(0,temp_resp_time)
+                    one_resp.insert(0, useremail)
+                    one_resp.insert(0, username)
+                    ngr.append(one_resp)
+                    one_resp = []
 
-                        temp_resp_time = resp.response_time
-                        username = ''
-                        useremail = ''
-                        if resp.user is not None:
-                            username = responses[0].user.username
-                            useremail = responses[0].user.email
+                    temp_resp_time = resp.response_time
+                    username = ''
+                    useremail = ''
+                    if resp.user is not None:
+                        username = responses[0].user.username
+                        useremail = responses[0].user.email
 
-                    # short & long answer type
-                    if resp.question.qtype in [0,1]:
+                # short & long answer type
+                if resp.question.qtype in [0,1]:
+                    one_resp.append(resp.other)
+                    # options type
+                elif resp.question.qtype in [2,3,4]:
+                    if resp.options == "":
                         one_resp.append(resp.other)
-                        # options type
-                    elif resp.question.qtype in [2,3,4]:
-                        if resp.options == "":
-                            one_resp.append(resp.other)
-                        else:
-                            t = ''
-                            if resp.options != " @ ":
-                                op_ids = [int(x) for x in re.split(" @ ",resp.options)[:-1]]
-                                for op_id in op_ids:
-                                    t = t + Option.objects.get(id=op_id).value + ', '
-                                t = t[:-2]
-                            one_resp.append(t)
-                        # file upload type
-                    elif resp.question.qtype == 5:
-                        # temp_response = temp_response + resp.file + ' # '
-                        pass
-                        # linear scale type
-                    elif resp.question.qtype == 6:
-                        one_resp.append(resp.other)
-                        # grid type
-                    elif resp.question.qtype in [7,8]:
-                        pass
-                        # date type
-                    elif resp.question.qtype == 9:
-                        one_resp.append(resp.date)
-                        # time type
-                    elif resp.question.qtype == 10:
-                        one_resp.append(resp.time)
                     else:
-                        pass
-                
-                one_resp.insert(0,temp_resp_time)
-                one_resp.insert(0, useremail)
-                one_resp.insert(0, username)
-                ngr.append(one_resp)
-
-            except  :
-                print('exception aya')
-
-            qtitles = []
-            for q in questions:
-                if q.qtype == 7 or q.qtype == 8:
-                    rows = Row.objects.filter(question=q).order_by('id')
-                    for r in rows:
-                        qtitles.append(q.title+' ['+r.value+']')
+                        t = ''
+                        if resp.options != " @ ":
+                            op_ids = [int(x) for x in re.split(" @ ",resp.options)[:-1]]
+                            for op_id in op_ids:
+                                t = t + Option.objects.get(id=op_id).value + ', '
+                            t = t[:-2]
+                        one_resp.append(t)
+                    # file upload type
+                elif resp.question.qtype == 5:
+                    # temp_response = temp_response + resp.file + ' # '
+                    pass
+                    # linear scale type
+                elif resp.question.qtype == 6:
+                    one_resp.append(resp.other)
+                    # grid type
+                elif resp.question.qtype in [7,8]:
+                    pass
+                    # date type
+                elif resp.question.qtype == 9:
+                    one_resp.append(resp.date)
+                    # time type
+                elif resp.question.qtype == 10:
+                    one_resp.append(resp.time)
                 else:
                     pass
+            
+            one_resp.insert(0,temp_resp_time)
+            one_resp.insert(0, useremail)
+            one_resp.insert(0, username)
+            ngr.append(one_resp)
+
+        except  :
+            print('exception aya')
+
+        qtitles = []
+        for q in questions:
+            if q.qtype == 7 or q.qtype == 8:
+                rows = Row.objects.filter(question=q).order_by('id')
+                for r in rows:
+                    qtitles.append(q.title+' ['+r.value+']')
+            else:
+                pass
+            
+        gr.append(qtitles)
+
+        try:
+            temp_resp_time = responses78[0].response_time
+            one_resp = []
+            # print('aaaaaaa1')
+            for resp in responses78:
+                # print(resp.question.qtype)
+                if resp.response_time != temp_resp_time:
+                    gr.append(one_resp)
+                    one_resp = []
+                    temp_resp_time = resp.response_time
                 
-            gr.append(qtitles)
+                op_ids = [int(x) for x in re.split(" @ ",resp.options)[:-1]]
+                # print(resp.options,'*******',op_ids)
+                t = ''
+                for op_id in op_ids:
+                    t = t + Option.objects.get(id=op_id).value + ', '
+                t = t[:-2]
+                one_resp.append(t)
+            
+            gr.append(one_resp)
+            one_resp = []    
 
-            try:
-                temp_resp_time = responses78[0].response_time
-                one_resp = []
-                # print('aaaaaaa1')
-                for resp in responses78:
-                    # print(resp.question.qtype)
-                    if resp.response_time != temp_resp_time:
-                        gr.append(one_resp)
-                        one_resp = []
-                        temp_resp_time = resp.response_time
-                    
-                    op_ids = [int(x) for x in re.split(" @ ",resp.options)[:-1]]
-                    # print(resp.options,'*******',op_ids)
-                    t = ''
-                    for op_id in op_ids:
-                        t = t + Option.objects.get(id=op_id).value + ', '
-                    t = t[:-2]
-                    one_resp.append(t)
-                
-                gr.append(one_resp)
-                one_resp = []    
+        except:
+            print('exception aya22')
+            
+        finalresp = ''
 
-            except:
-                print('exception aya22')
-                
-            finalresp = ''
+        for i in range(len(ngr)):
+            finalresp = finalresp + ','.join(str(x) for x in ngr[i]+gr[i]) +'\n'
 
-            for i in range(len(ngr)):
-                finalresp = finalresp + ','.join(str(x) for x in ngr[i]+gr[i]) +'\n'
-
-            return render(request, 'getcsv.html', {'responses':finalresp})
+        return finalresp
 
 def submitted(request):
     return render(request,'submitted.html')
