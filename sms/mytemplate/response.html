@@ -16,7 +16,8 @@
     <h1>Response</h1>
     <a href="/user/editor/{{sur_id}}">Editor</a> <br>
     <a href="/user/">Dashboard</a> <br>
-    <p id="save" style="display: none;">{{responses}}</p>
+    <p id="save" style="display:none;">{{responses}}</p>
+    <p id="s" style="display:block;">{{respList}}</p>
     <button onclick="download_csv()">Get csv of responses</button>
     <div id="stats"></div>
     <div id="charts">
@@ -184,6 +185,7 @@
     }
     return [a,b];
   }
+
   function download_csv() {
     var csvFile = "responses";
     var textToSave = document.getElementById("save").innerHTML;

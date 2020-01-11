@@ -1,0 +1,5 @@
+user,email,time,Short answer,Paragraph type,Multiple choice,checkbox type,Drop-down type,Linear scale,Date type,time type
+,,2020-01-06 14:32:42.660012+00:00,apple,Lorem text placeholder,Option-3,Option-1; Option-2,Option-3,None,2020-01-06,04:05:00
+,,2020-01-06 14:52:16.728277+00:00,banana,my best friend ...etc.,Option-4,Option-3; Option-4,Option-4,None,2020-01-23,None
+,,2020-01-06 15:11:55.163560+00:00,banana,my best friend ...etc.,Option-1,Option-2; Option-3,Option-2,None,2020-01-15,None
+,,2020-01-06 15:13:10.231642+00:00,pineapple,cow ...etc.,Option-1,Option-3,Option-2,None,2020-01-06,05:06:00
