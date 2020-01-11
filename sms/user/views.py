@@ -71,8 +71,8 @@ def create_survey(request):
         user1 = request.user
         new_sur = Survey(title="New Survey form",desc="description here",endDate=None)
         new_sur.save()
-        # new_sec = Section(survey=new_sur,section_no=1,title="New Section",desc="")
-        # new_sec.save()
+        new_sec = Section(survey=new_sur,section_no=1,title="New Section",desc="")
+        new_sec.save()
         User_survey(user=user1,survey=new_sur).save()
         return redirect('/user/editor/'+str(new_sur.id))
     else:
@@ -700,21 +700,18 @@ def get_csv(sur_id=None):
             print('exception aya22')
             
         finalresp = ''
+        finallist = []
 
         for i in range(len(ngr)):
-            if gr != [[]]:
-                finalresp = finalresp + ','.join(str(x) for x in ngr[i]+gr[i]) +'\n'
-            else:
+            if gr == [[]]:
                 finalresp = finalresp + ','.join(str(x) for x in ngr[i]) +'\n'
-
-        finallist = []
-        if gr == [[]]:
-            finallist = ngr
-        elif ngr == [[]]:
-            finallist = gr
-        else:
-            for i in range(ngr.len):
-                finallist[i] = ngr[i] + gr[i]
+                finallist.append([str(x) for x in ngr[i]])
+            elif ngr == [[]]:
+                finalresp = finalresp + ','.join(str(x) for x in gr[i]) +'\n'
+                finallist.append([str(x) for x in gr[i]])
+            else:
+                finalresp = finalresp + ','.join(str(x) for x in ngr[i] + gr[i]) +'\n'
+                finallist.append([str(x) for x in ngr[i] + gr[i]])
                 
         print(finallist)
         return finalresp, finallist
