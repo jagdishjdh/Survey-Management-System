@@ -404,13 +404,14 @@ def response(request, sur_id=None):
             # print(ngr_final)
             # print(gr_final)
 
-            finalresp = get_csv(sur_id)
+            finalresp, finallist = get_csv(sur_id)
 
             return render(request, 'response.html', 
                 {'non_grid_responses':ngr_final[:-4],
                 'grid_responses':gr_final[:-4],
                 'sur_id':sur[0].id,
                 'responses':finalresp,
+                'respList' : finallist,
                 'filename':sur[0].title })
 
     else:
@@ -456,7 +457,7 @@ def preview(request, sur_id=None):
                 response_time = datetime.now() #int(datetime.now().strftime('%Y%m%d%H%M%s')) % 2147483648
 
                 answers = request.POST['text_answer']
-                print(answers)
+                print(answers,'**********')
                 answers = re.split(' ## ',answers)[:-1]
                 for i in range(len(answers)):
                     answers[i] = re.split(' # ', answers[i])
@@ -632,7 +633,7 @@ def get_csv(sur_id=None):
                         if resp.options != " @ ":
                             op_ids = [int(x) for x in re.split(" @ ",resp.options)[:-1]]
                             for op_id in op_ids:
-                                t = t + Option.objects.get(id=op_id).value + ', '
+                                t = t + Option.objects.get(id=op_id).value + '; '
                             t = t[:-2]
                         one_resp.append(t)
                     # file upload type
@@ -688,7 +689,7 @@ def get_csv(sur_id=None):
                 # print(resp.options,'*******',op_ids)
                 t = ''
                 for op_id in op_ids:
-                    t = t + Option.objects.get(id=op_id).value + ', '
+                    t = t + Option.objects.get(id=op_id).value + '; '
                 t = t[:-2]
                 one_resp.append(t)
             
@@ -701,9 +702,22 @@ def get_csv(sur_id=None):
         finalresp = ''
 
         for i in range(len(ngr)):
-            finalresp = finalresp + ','.join(str(x) for x in ngr[i]+gr[i]) +'\n'
+            if gr != [[]]:
+                finalresp = finalresp + ','.join(str(x) for x in ngr[i]+gr[i]) +'\n'
+            else:
+                finalresp = finalresp + ','.join(str(x) for x in ngr[i]) +'\n'
 
-        return finalresp
+        finallist = []
+        if gr == [[]]:
+            finallist = ngr
+        elif ngr == [[]]:
+            finallist = gr
+        else:
+            for i in range(ngr.len):
+                finallist[i] = ngr[i] + gr[i]
+                
+        print(finallist)
+        return finalresp, finallist
 
 def submitted(request):
     return render(request,'submitted.html')
