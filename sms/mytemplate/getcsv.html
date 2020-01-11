@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>CSV</title>
+</head>
+<body>
+  <p id="save">{{responses}}</p>
+  <button onclick="download_csv()">Download</button>
+
+  <script>
+    function download_csv() {
+      var csvFile = "responses";
+      var textToSave = document.getElementById("save").innerHTML;
+
+      var hiddenElement = document.createElement('a');
+
+      hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
+      hiddenElement.target = '_blank';
+      hiddenElement.download = "{{filename}}"+'.csv';
+      hiddenElement.click();
+  }
+  </script>
+</body>
+</html>
+  
