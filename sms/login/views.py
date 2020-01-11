@@ -14,12 +14,16 @@ def login(request):
     if request.method == 'POST':
         uname = request.POST['uname']
         passwd = request.POST['password']
+        path = request.POST['path']
 
         user = auth.authenticate(username=uname, password=passwd)
 
         if user is not None:
             auth.login(request,user)
-            return redirect('/user')
+            if path == '':
+                return redirect('/user')
+            else:
+                return redirect(path)
         else:
             messages.info(request, 'Invalid Username or Password')
             return redirect('/login')

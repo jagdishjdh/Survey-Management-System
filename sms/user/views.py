@@ -449,6 +449,13 @@ def preview(request, sur_id=None):
     if sur_id is not None:
         try:
             survey = Survey.objects.get(id=sur_id)
+            curuser = None
+
+            if survey.anonymous is False:
+                if not request.user.is_authenticated:
+                    messages.info(request, 'Form require user to login')
+                    return render(request, 'login.html',{'path': request.path})
+                curuser = request.user
 
             if survey.endDate is not None and survey.endDate < datetime.now(tz=utc):
                 return HttpResponse("<h2>This survey form is closed<h2>")
@@ -464,6 +471,7 @@ def preview(request, sur_id=None):
                 
                 for ans in  answers:
                     new_res = Response(response_time=response_time,
+                            user=curuser,
                             survey=survey,
                             question=Question.objects.get(id=int(ans[0])),
                             options=ans[2])
@@ -618,8 +626,8 @@ def get_csv(sur_id=None):
                     username = ''
                     useremail = ''
                     if resp.user is not None:
-                        username = responses[0].user.username
-                        useremail = responses[0].user.email
+                        username = resp.user.username
+                        useremail = resp.user.email
 
                 # short & long answer type
                 if resp.question.qtype in [0,1]:
@@ -661,6 +669,7 @@ def get_csv(sur_id=None):
             ngr.append(one_resp)
 
         except  :
+            print(ngr)
             print('exception aya')
 
         qtitles = []
@@ -707,14 +716,14 @@ def get_csv(sur_id=None):
             else:
                 finalresp = finalresp + ','.join(str(x) for x in ngr[i]) +'\n'
 
-        finallist = []
+        finallist = [[]]
         if gr == [[]]:
             finallist = ngr
         elif ngr == [[]]:
             finallist = gr
         else:
-            for i in range(ngr.len):
-                finallist[i] = ngr[i] + gr[i]
+            for i in range(len(ngr)):
+                finallist.append(ngr[i] + gr[i])
                 
         print(finallist)
         return finalresp, finallist
