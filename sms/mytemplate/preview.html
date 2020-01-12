@@ -87,15 +87,15 @@
                         <p class="mainq">{{ q.order }}. {{ q.title }}</p>
                     {% endif %}
 
-
+                    <!-- short ans -->
                 {% if q.qtype == 0 %}
                     {% if q.required %}
-                        <input type="text" class="textans" required="true">
+                        <input type="text" class="textans" required>
                     {% else %}
                         <input type="text" class="textans">
                     {% endif %}
 
-
+                    <!-- paragraph -->
                 {% elif q.qtype == 1 %}
                     {% if q.required %}
                         <textarea rows="6" class="textans" required></textarea>
@@ -103,7 +103,7 @@
                         <textarea rows="6" class="textans"></textarea>
                     {% endif %}
 
-
+                    <!-- multiple choice -->
                 {% elif q.qtype == 2 %}
                     {% for opt in optn.0 %}
                         {% if q.required %}
@@ -120,6 +120,7 @@
                     {% else %}
                     {% endif %}
 
+                    <!-- checkbox -->
                 {% elif q.qtype == 3 %}
                     {% for opt in optn.0 %}
                         {% if q.required %}
@@ -135,7 +136,7 @@
                     {% else %}
                     {% endif %}
 
-
+                    <!-- drop-down -->
                 {% elif q.qtype == 4 %}
                     {% if q.required %}
                         <select required="true">
@@ -150,6 +151,7 @@
                     {% endfor %}
                     </select>
 
+                    <!-- File upload -->
                 {% elif q.qtype == 5 %}
                     {% if q.required %}
                         <input type="file" class="fileupload" required>
@@ -157,6 +159,7 @@
                         <input type="file" class="fileupload">
                     {% endif %}
 
+                    <!-- Linear Scale -->
                 {% elif q.qtype == 6 %}
                     {% if q.required %}
                         <input type="text" required>
@@ -164,6 +167,7 @@
                         <input type="text">
                     {% endif %}
 
+                    <!-- multiple choice grid -->
                 {% elif q.qtype == 7 %}
                     <table>
                         <tr>
@@ -187,6 +191,7 @@
                         {% endfor %}
                     </table>
 
+                    <!-- tick box grid -->
                 {% elif q.qtype == 8 %}
                     <table>
                         <tr>
@@ -210,7 +215,7 @@
                         {% endfor %}
                     </table>
 
-            
+                    <!-- Date -->
                 {% elif q.qtype == 9 %}
                     {% if q.required %}
                     <input type="date" class="mydatetime" required="true">
@@ -218,6 +223,7 @@
                     <input type="date" class="mydatetime">
                     {% endif %}
 
+                    <!-- Time -->
                 {% elif q.qtype == 10 %}
                     {% if q.required %}
                         <input type="time" class="mydatetime" required="true">
