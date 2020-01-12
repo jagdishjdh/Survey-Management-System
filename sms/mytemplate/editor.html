@@ -1,4 +1,5 @@
 {% load static %}
+{% load extras %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -221,12 +222,12 @@
 
                 {% elif q.qtype == 6 %}
                   <div class="scale_div">
-                    <select style="display: inline;">
+                    <select style="display: inline;" class="linerselect">
                       <option>0</option>
                       <option>1</option>
                     </select>
                     <p style="display: inline;">to</p>
-                    <select style="display: inline;">
+                    <select style="display: inline;" class="linerselect">
                       <option>2</option>
                       <option>3</option>
                       <option>4</option>
@@ -238,9 +239,9 @@
                       <option>10</option>
                     </select>
                     <p style="display: inline;">start label:-</p>
-                    <input type="text" value="start" style="display: inline;">
+                    <input type="text" value="{{q.constraint | split:'#@#:2'}}" style="display: inline;">
                     <p style="display: inline;">end label:-</p>
-                    <input type="text" value="end" style="display: inline;">
+                    <input type="text" value="{{q.constraint | split:'#@#:3'}}" style="display: inline;">
                 </div>
 
 
@@ -878,8 +879,8 @@
           var startlbl =  scalediv.getElementsByTagName("input")[0].value;
           var endlbl =  scalediv.getElementsByTagName("input")[1].value;
 
-          var startindex =  parent.getElementsByTagName("select")[0].selectedIndex;
-          var endindex =  parent.getElementsByTagName("select")[1].selectedIndex;
+          var startindex =  parent.getElementsByClassName("linerselect")[0].selectedIndex;
+          var endindex =    parent.getElementsByClassName("linerselect")[1].selectedIndex;
           constraint=startindex+sp3+endindex+sp3+startlbl+sp3+endlbl;
       }
 
