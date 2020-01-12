@@ -10,7 +10,6 @@ import pytz
 
 utc=pytz.UTC
 
-
 class form:
      def __init__(self,survey,dic):
          self.survey = survey
@@ -293,6 +292,8 @@ def response(request, sur_id=None):
                 else:
                     qtypes.append(q.qtype)
                     qtitles.append(q.title)
+            
+            ngrLen = len(qtitles)
             ngr.append(qtypes)
             ngr.append(qtitles)
 
@@ -309,6 +310,7 @@ def response(request, sur_id=None):
                     # print(resp.question.qtype)
                     if resp.response_time != temp_resp_time:
                         # one_resp.insert(0,temp_resp_time)
+                        one_resp.extend(['' for i in range(ngrLen-len(one_resp))])
                         ngr.append(one_resp)
                         one_resp = []
                         temp_resp_time = resp.response_time
@@ -347,6 +349,7 @@ def response(request, sur_id=None):
                     else:
                         pass
                 
+                one_resp.extend(['' for i in range(ngrLen-len(one_resp))])
                 one_resp.insert(0,temp_resp_time)
                 ngr.append(one_resp)
 
@@ -364,6 +367,7 @@ def response(request, sur_id=None):
                 else:
                     pass
                 
+            grLen = len(qtitles)
             gr.append(qtypes)
             gr.append(qtitles)
 
@@ -374,6 +378,7 @@ def response(request, sur_id=None):
                 for resp in responses78:
                     # print(resp.question.qtype)
                     if resp.response_time != temp_resp_time:
+                        one_resp.extend(['' for i in range(grLen-len(one_resp))])
                         gr.append(one_resp)
                         one_resp = []
                         temp_resp_time = resp.response_time
@@ -386,6 +391,7 @@ def response(request, sur_id=None):
                     t = t[:-2]
                     one_resp.append(t)
                 
+                one_resp.extend(['' for i in range(grLen-len(one_resp))])
                 gr.append(one_resp)
                 one_resp = []    
 
@@ -491,8 +497,8 @@ def preview(request, sur_id=None):
                     elif typ == 6:
                         pass
                     else:
-                        new_res.other = ans[3]
-                    
+                        pass
+                    new_res.other = ans[3]
                     new_res.save()
 
                 return redirect('/user/submitted/')
@@ -596,6 +602,7 @@ def get_csv(sur_id=None):
                 # qtypes.append(q.qtype)
                 qtitles.append(q.title)
         # ngr.append(qtypes)
+        ngrLen = len(qtitles)
         ngr.append(qtitles)
 
         responses = Response.objects.filter(survey=sur[0]).exclude(question__qtype__in=[7,8]).order_by('response_time','question__order')
@@ -619,6 +626,7 @@ def get_csv(sur_id=None):
                     one_resp.insert(0,temp_resp_time)
                     one_resp.insert(0, useremail)
                     one_resp.insert(0, username)
+                    one_resp.extend(['' for i in range(ngrLen-len(one_resp))])
                     ngr.append(one_resp)
                     one_resp = []
 
@@ -666,10 +674,11 @@ def get_csv(sur_id=None):
             one_resp.insert(0,temp_resp_time)
             one_resp.insert(0, useremail)
             one_resp.insert(0, username)
+            one_resp.extend(['' for i in range(ngrLen-len(one_resp))])
             ngr.append(one_resp)
 
         except  :
-            print(ngr)
+            # print(ngr)
             print('exception aya')
 
         qtitles = []
@@ -681,6 +690,7 @@ def get_csv(sur_id=None):
             else:
                 pass
             
+        grLen = len(qtitles)
         gr.append(qtitles)
 
         try:
@@ -690,6 +700,7 @@ def get_csv(sur_id=None):
             for resp in responses78:
                 # print(resp.question.qtype)
                 if resp.response_time != temp_resp_time:
+                    one_resp.extend(['' for i in range(grLen-len(one_resp))])
                     gr.append(one_resp)
                     one_resp = []
                     temp_resp_time = resp.response_time
@@ -702,6 +713,7 @@ def get_csv(sur_id=None):
                 t = t[:-2]
                 one_resp.append(t)
             
+            one_resp.extend(['' for i in range(grLen-len(one_resp))])
             gr.append(one_resp)
             one_resp = []    
 
@@ -726,4 +738,4 @@ def get_csv(sur_id=None):
         return finalresp, finallist
 
 def submitted(request):
-    return render(request,'submitted.html')
+    return render(request,'submitted.html' , {'aaa':'some##name##is##here'})
