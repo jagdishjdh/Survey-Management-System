@@ -87,7 +87,7 @@
     rl.push(ll[i].split(" # "));
   }
   
-  var chr_types = rl[0].map(type_of_chart); 
+  var chr_types = rl[0].map(type_of_chart);
   //var chr_types = ["line", "piechart", "line","column"];
   var chr_names = rl[1];
   var datum = rl.slice(2);
@@ -152,7 +152,7 @@
       var chart = new CanvasJS.Chart("chartContainer"+i,
       {
         title:{
-        text: "Index Labels on dataPoints"   
+        text: titles[i]   
         },
         data: [
         {        
@@ -172,7 +172,7 @@
     if(col_name=="1")
     return "string";
     else if(col_name=="3")
-    return "line";
+    return "column";
     else if(col_name=="2")
     return "piechart";
     else if(col_name=="4")
@@ -180,7 +180,7 @@
     else if(col_name=="5")
     return "string";
     else if(col_name=="6")
-    return "column";
+    return "line";
     else if(col_name=="7")
     return "piechart";
     else if(col_name=="8")
